@@ -40,8 +40,23 @@ curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/
 - Vercel
 - Netlify
 
-### Build/runtime strategy in this repository
-The frontend runs as static assets served by Bun (`packages/frontend/web/src/server.ts`).
+### Deployment approach
+Deploy folder `packages/frontend/web` as static site plus Bun server option.
 
-### Frontend runtime variable
-- `__API_BASE_URL` (global value injected in hosting layer) or fallback to `http://localhost:3001`.
+### Frontend runtime API target
+Edit `packages/frontend/web/runtime-config.js`:
+```js
+globalThis.__API_BASE_URL = "https://<backend-url>";
+```
+
+### Frontend publish checks
+- Open frontend URL.
+- Click `Executar` and verify table fills.
+- Click `Limpar` and verify table clears without reload.
+
+### Optional static hosting command
+If platform supports command-based start:
+```bash
+cd packages/frontend/web
+bun src/server.ts
+```
