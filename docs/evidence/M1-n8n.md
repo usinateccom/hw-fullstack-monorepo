@@ -3,7 +3,7 @@
 ## Version checks
 ```bash
 node -v
-npm -v
+bun -v
 n8n --version
 ```
 
