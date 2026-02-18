@@ -26,5 +26,21 @@ curl -i -X POST https://<backend-url>/users/execute -H 'content-type: applicatio
 curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/json' -d '{}'
 ```
 
+## M4-02 - frontend deployment
+
+### Platform
+- `PENDING` (Vercel/Netlify)
+
+### Frontend URL
+- `PENDING`
+
+### Backend URL consumed by frontend
+- configured in `packages/frontend/web/runtime-config.js`
+
+### E2E proof placeholders
+- `[ ] front online screenshot`
+- `[ ] execute flow screenshot`
+- `[ ] clear flow screenshot`
+
 ### Notes
 - Deployment actions are pending due network restrictions in the current sandbox.
