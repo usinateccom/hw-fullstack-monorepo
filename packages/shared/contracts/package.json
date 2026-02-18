@@ -3,8 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "echo \"No tests configured for shared contracts\"",
-    "lint": "echo \"No lint configured for shared contracts\"",
-    "typecheck": "echo \"No typecheck configured for shared contracts\""
+    "test": "echo \"No runtime tests for shared contracts\"",
+    "lint": "../../../node_modules/.bun/typescript@5.9.3/node_modules/typescript/bin/tsc --noEmit",
+    "typecheck": "../../../node_modules/.bun/typescript@5.9.3/node_modules/typescript/bin/tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
   }
 }

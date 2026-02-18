@@ -24,9 +24,6 @@ bun src/server.ts
 - `HTTP_TIMEOUT_MS`
 - `HTTP_RETRIES`
 
-### CORS
-Set `CORS_ORIGIN` to the frontend deployed URL.
-
 ### Post-deploy smoke test
 ```bash
 curl -i https://<backend-url>/health
@@ -34,29 +31,25 @@ curl -i -X POST https://<backend-url>/users/execute -H 'content-type: applicatio
 curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/json' -d '{}'
 ```
 
-## Frontend (React page)
+## Frontend (React + Vite)
 
 ### Recommended platforms
 - Vercel
 - Netlify
 
-### Deployment approach
-Deploy folder `packages/frontend/web` as static site plus Bun server option.
-
-### Frontend runtime API target
-Edit `packages/frontend/web/runtime-config.js`:
-```js
-globalThis.__API_BASE_URL = "https://<backend-url>";
+### Build command
+```bash
+cd packages/frontend/web
+bun run build
 ```
+
+### Publish directory
+- `packages/frontend/web/dist`
+
+### Environment variable
+- `VITE_API_BASE_URL=https://<backend-url>`
 
 ### Frontend publish checks
 - Open frontend URL.
 - Click `Executar` and verify table fills.
 - Click `Limpar` and verify table clears without reload.
-
-### Optional static hosting command
-If platform supports command-based start:
-```bash
-cd packages/frontend/web
-bun src/server.ts
-```

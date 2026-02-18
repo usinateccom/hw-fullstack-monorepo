@@ -13,7 +13,7 @@ Pipeline implemented in this repository:
 
 ## Tech stack
 - Backend: Bun + Fastify (DDD-ish boundaries)
-- Frontend: React UI (ESM runtime) served by Bun static server
+- Frontend: React + Vite
 - Workflows: n8n (ingest/list/clear)
 - Database: PostgreSQL
 
@@ -24,24 +24,8 @@ Pipeline implemented in this repository:
 - `infra/sql/users.sql`
 - `docs/` and `docs/evidence/`
 
-## Local run (Linux/WSL)
+## Local run
 Detailed steps: `PROJECT-SETUP.md`
-
-Quick commands:
-```bash
-bun install
-
-# backend
-cd packages/backend/api
-cp .env.example .env
-bun run dev
-
-# frontend
-cd ../frontend/web
-# edit runtime-config.js if needed
-globalThis.__API_BASE_URL = "http://localhost:3001"
-bun run dev
-```
 
 ## Validation
 From root:
@@ -57,7 +41,4 @@ bun run typecheck
 - M2: `docs/evidence/M2-crypto.md`
 - M3: `docs/evidence/M3-ui.md`
 - M4: `docs/evidence/M4-deploy.md`
-
-## Notes about current sandbox
-- Cloud deploy and GitHub PR creation require external network and are blocked in this environment.
-- Commands and placeholders for final online proof are already documented.
+- M5: `docs/evidence/M5-rag.md`

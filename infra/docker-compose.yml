@@ -5,9 +5,9 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: hw_user
-      POSTGRES_PASSWORD: hw_pass
-      POSTGRES_DB: hw_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Tst1320
+      POSTGRES_DB: hw_fullstack_db
     ports:
       - "5432:5432"
     volumes:
