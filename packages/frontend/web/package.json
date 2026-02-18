@@ -3,8 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "echo \"TODO: start React app\"",
-    "test": "echo \"TODO: run Jest\"",
+    "dev": "bun src/server.ts",
+    "start": "bun src/server.ts",
+    "test": "bun test",
     "lint": "echo \"TODO: lint\"",
     "typecheck": "echo \"TODO: typecheck\""
   }
