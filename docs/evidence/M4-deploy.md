@@ -53,3 +53,10 @@ curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/
 ### Remaining external actions
 - Publish backend and frontend URLs.
 - Attach screenshots and curl outputs above.
+
+## Local validation status (2026-02-18)
+- Monorepo checks executed successfully:
+  - `bun run test`
+  - `bun run lint`
+  - `bun run typecheck`
+- Deploy evidence is still pending cloud publication and public URLs.

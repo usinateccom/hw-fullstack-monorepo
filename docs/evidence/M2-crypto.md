@@ -44,6 +44,20 @@ bun run lint
 bun run typecheck
 ```
 
+## Latest validation run (2026-02-18)
+```bash
+bun run test      # PASS
+bun run lint      # PASS
+bun run typecheck # PASS
+```
+
+### Backend test highlights
+- Bun tests: `13 pass`, `0 fail`.
+- Japa tests: `3 passed` for:
+  - `GET /health`
+  - `POST /users/execute`
+  - `POST /users/clear`
+
 ## Curl examples (localhost)
 ```bash
 curl -i http://localhost:3001/health

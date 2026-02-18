@@ -28,6 +28,19 @@ bun run lint
 bun run typecheck
 ```
 
+## Latest validation run (2026-02-18)
+```bash
+bun run test      # PASS
+bun run lint      # PASS
+bun run typecheck # PASS
+```
+
+### Frontend test highlights
+- Jest + RTL state transitions:
+  - execute populates table
+  - clear empties table
+  - loading disables buttons
+
 ## E2E checklist
 - [ ] start backend and n8n
 - [ ] click `Executar` and verify rows rendered
