@@ -3,9 +3,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "echo \"TODO: start Fastify with Bun\"",
-    "test": "echo \"TODO: run Japa tests\"",
-    "lint": "echo \"TODO: lint\"",
-    "typecheck": "echo \"TODO: typecheck\""
+    "dev": "bun --watch src/server.ts",
+    "start": "bun src/server.ts",
+    "test": "bun test",
+    "lint": "bunx tsc --noEmit",
+    "typecheck": "bunx tsc --noEmit"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.1.0",
+    "fastify": "^5.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.30",
+    "typescript": "^5.9.3"
   }
 }
