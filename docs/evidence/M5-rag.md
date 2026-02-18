@@ -22,6 +22,10 @@ Example hits:
 - `docs/evidence/M2-crypto.md`
 - `.github/issues/M2-02-secure-endpoint-fetch-and-decrypt-aes-256-gcm.md`
 
+## M5-02 - workflow documentation
+- Updated `AGENTS.md` to require `bun run rag:search` before coding each issue.
+- Added `docs/agentic-workflow.md` with concise step-by-step and example commands.
+
 ### Notes
 - local-only implementation
 - no external APIs or embeddings

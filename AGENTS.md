@@ -5,15 +5,17 @@ One issue = one branch = one PR.
 
 ## Steps
 1) Pick an issue file from `.github/issues/`
-2) Create branch:
-   - `git checkout -b feat/<issue-slug>`
-3) Implement + tests + docs
-4) Update evidence in `docs/evidence/`
-5) Validate:
+2) Before coding, run docs lookup:
+   - `bun run rag:search "<issue keywords>"`
+3) Create branch:
+   - `git checkout -b feature/<ISSUE-ID>-<slug>`
+4) Implement + tests + docs
+5) Update evidence in `docs/evidence/`
+6) Validate:
    - `bun run test`
    - `bun run lint`
    - `bun run typecheck`
-6) Push and open PR (optional via gh)
+7) Push and open PR (optional via gh)
 
 ## Done when
 - Acceptance Criteria satisfied
