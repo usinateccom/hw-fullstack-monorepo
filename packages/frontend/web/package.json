@@ -7,7 +7,7 @@
     "start": "bun src/server.ts",
     "test": "bun test",
     "test:jest": "bun src/testing/run-jest.ts",
-    "lint": "echo \"TODO: lint\"",
-    "typecheck": "echo \"TODO: typecheck\""
+    "lint": "echo \"No lint configured for frontend web\"",
+    "typecheck": "echo \"No typecheck configured for frontend web\""
   }
 }

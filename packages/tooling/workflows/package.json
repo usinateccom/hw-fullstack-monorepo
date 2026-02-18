@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "echo \"TODO\""
+    "test": "echo \"No tests configured for workflow exports\""
   }
 }

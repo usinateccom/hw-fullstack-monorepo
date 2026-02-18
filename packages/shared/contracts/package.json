@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "echo \"TODO\"",
-    "lint": "echo \"TODO\"",
-    "typecheck": "echo \"TODO\""
+    "test": "echo \"No tests configured for shared contracts\"",
+    "lint": "echo \"No lint configured for shared contracts\"",
+    "typecheck": "echo \"No typecheck configured for shared contracts\""
   }
 }

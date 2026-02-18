@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "rag:index": "echo \"TODO: index docs into rag/index.json\"",
-    "rag:search": "echo \"TODO: search rag index\""
+    "rag:index": "bun src/index.ts index",
+    "rag:search": "bun src/index.ts search"
   }
 }
