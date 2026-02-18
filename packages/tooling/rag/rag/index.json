@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-02-18T14:52:41.308Z",
+  "generatedAt": "2026-02-18T14:53:31.218Z",
   "files": [
     {
       "path": "docs/workflows.md",
@@ -12,6 +12,10 @@
     {
       "path": "docs/api.md",
       "content": "# API\n\n(TODO)\n"
+    },
+    {
+      "path": "docs/agentic-workflow.md",
+      "content": "# Agentic Workflow\n\n## Purpose\nKeep issue delivery fast and reproducible by checking local docs context before writing code.\n\n## Standard loop\n1. Choose issue in `.github/issues/`.\n2. Run:\n```bash\nbun run rag:search \"<issue keywords>\"\n```\n3. Create feature branch.\n4. Implement only the issue scope.\n5. Update evidence file for the milestone.\n6. Run validations (`test`, `lint`, `typecheck`).\n7. Open PR to `develop`.\n\n## Example\nFor issue `M2-03`:\n```bash\nbun run rag:search \"M2-03 n8n execute clear\"\ngit checkout -b feature/M2-03-n8n-forward-ingest\n```\n\nUse top hits to avoid duplicating existing decisions from `docs/` and issue files.\n"
     },
     {
       "path": "docs/architecture.md",
@@ -31,7 +35,7 @@
     },
     {
       "path": "docs/evidence/M5-rag.md",
-      "content": "# Evidence: M5-rag.md\n\n## M5-01 - local rag-like index/search\n\n### Commands\n```bash\nbun run rag:index\nbun run rag:search \"AES-256-GCM\"\nbun run rag:search \"TRUNCATE users\"\n```\n\n### Expected outputs\n- index file generated at `packages/tooling/rag/rag/index.json`\n- ranked matches containing file paths + snippets\n\n### Notes\n- local-only implementation\n- no external APIs or embeddings\n"
+      "content": "# Evidence: M5-rag.md\n\n## M5-01 - local rag-like index/search\n\n### Commands executed\n```bash\nbun run rag:index\nbun run rag:search \"AES-256-GCM\"\nbun run rag:search \"TRUNCATE users\"\n```\n\n### Observed outputs\n- Index generated at `packages/tooling/rag/rag/index.json`\n- Indexed files: `33`\n- Search returns ranked matches with:\n  - score\n  - file path\n  - content snippet\n\nExample hits:\n- `docs/architecture.md`\n- `docs/evidence/M2-crypto.md`\n- `.github/issues/M2-02-secure-endpoint-fetch-and-decrypt-aes-256-gcm.md`\n\n## M5-02 - workflow documentation\n- Updated `AGENTS.md` to require `bun run rag:search` before coding each issue.\n- Added `docs/agentic-workflow.md` with concise step-by-step and example commands.\n\n### Notes\n- local-only implementation\n- no external APIs or embeddings\n- run `rag:index` before `rag:search` to refresh index\n"
     },
     {
       "path": "docs/evidence/M3-ui.md",
