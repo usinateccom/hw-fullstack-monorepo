@@ -29,6 +29,16 @@
 - Consistent error envelope:
   - `{ "error": { "code": "...", "message": "...", "details": {} } }`
 
+### M2-04
+- Added deterministic route contract tests for:
+  - `GET /health`
+  - `POST /users/execute`
+  - `POST /users/clear`
+- Added Japa bootstrap placeholders:
+  - `packages/backend/api/japaFile.ts`
+  - `packages/backend/api/tests/japa/README.md`
+  - `bun run test:japa` (safe no-op when `@japa/runner` is unavailable)
+
 ## Curl examples (localhost)
 ```bash
 curl -i http://localhost:3001/health
@@ -43,6 +53,7 @@ curl -i -X POST http://localhost:3001/users/clear \
 ## Commands
 ```bash
 bun run test
+bun run test:japa
 bun run lint
 bun run typecheck
 ```
