@@ -60,8 +60,7 @@ PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT
 curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 source ~/.bashrc
 nvm install --lts
-npm i -g n8n
-n8n
+bunx n8n
 ```
 
 Open `http://localhost:5678`.

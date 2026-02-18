@@ -18,7 +18,7 @@ Labels: workflows,docs
 
 ## Deliverables / Evidence
 - `docs/evidence/M1-n8n.md` with:
-  - `node -v`, `npm -v`, `n8n --version` outputs
+  - `node -v`, `bun -v`, `n8n --version` outputs
   - screenshot placeholders
   - webhook URLs summary
 
