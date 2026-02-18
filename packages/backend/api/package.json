@@ -6,8 +6,8 @@
     "dev": "bun --watch src/server.ts",
     "start": "bun src/server.ts",
     "test": "bun test",
-    "lint": "bunx tsc --noEmit",
-    "typecheck": "bunx tsc --noEmit"
+    "lint": "../../../node_modules/.bun/typescript@5.9.3/node_modules/typescript/bin/tsc --noEmit",
+    "typecheck": "../../../node_modules/.bun/typescript@5.9.3/node_modules/typescript/bin/tsc --noEmit"
   },
   "dependencies": {
     "@fastify/cors": "^10.1.0",
