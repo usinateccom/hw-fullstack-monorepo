@@ -1,0 +1,72 @@
+{
+  "name": "list-users",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "list-users",
+        "httpMethod": "GET",
+        "responseMode": "responseNode"
+      },
+      "id": "Webhook_List",
+      "name": "Webhook List",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, nome, email, phone FROM users ORDER BY id ASC;"
+      },
+      "id": "Postgres_List",
+      "name": "Postgres List",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [520, 300],
+      "credentials": {
+        "postgres": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "postgres-local"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { users: $json } }}"
+      },
+      "id": "Respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [760, 300]
+    }
+  ],
+  "connections": {
+    "Webhook List": {
+      "main": [
+        [
+          {
+            "node": "Postgres List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres List": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1"
+}
