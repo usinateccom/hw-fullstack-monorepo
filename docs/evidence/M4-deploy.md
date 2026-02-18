@@ -34,8 +34,8 @@ curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/
 ### Frontend URL
 - `PENDING`
 
-### Backend URL consumed by frontend
-- configured in `packages/frontend/web/runtime-config.js`
+### Frontend env var
+- `VITE_API_BASE_URL=https://<backend-url>`
 
 ### E2E proof placeholders
 - `[ ] front online screenshot`
@@ -53,6 +53,3 @@ curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/
 ### Remaining external actions
 - Publish backend and frontend URLs.
 - Attach screenshots and curl outputs above.
-
-### Notes
-- Deployment and GitHub publishing are pending due network restrictions in the current sandbox.

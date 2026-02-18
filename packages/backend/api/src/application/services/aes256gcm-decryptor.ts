@@ -11,8 +11,16 @@ type Decoded = {
   key: Buffer;
 };
 
+function looksLikeHex(value: string): boolean {
+  return value.length % 2 === 0 && /^[0-9a-fA-F]+$/.test(value);
+}
+
 function decodeValue(value: string, preferred?: "base64" | "hex"): Buffer {
-  const attempts = preferred ? [preferred] : ["base64", "hex"];
+  const attempts: Array<"base64" | "hex"> = preferred
+    ? [preferred]
+    : looksLikeHex(value)
+      ? ["hex", "base64"]
+      : ["base64", "hex"];
 
   for (const encoding of attempts) {
     try {
@@ -29,16 +37,36 @@ function decodeValue(value: string, preferred?: "base64" | "hex"): Buffer {
 }
 
 function normalizePayload(raw: unknown): EncryptedPayload {
-  const record = (raw ?? {}) as Record<string, unknown>;
+  const root = (raw ?? {}) as Record<string, unknown>;
+  const data = (root.data ?? {}) as Record<string, unknown>;
+  const encryptedBlock = (data.encrypted ?? root.encrypted ?? {}) as Record<string, unknown>;
 
   const ciphertext =
-    (record.ciphertext as string | undefined) ??
-    (record.encryptedData as string | undefined) ??
-    (record.data as string | undefined);
-  const iv = (record.iv as string | undefined) ?? (record.initializationVector as string | undefined);
-  const authTag = (record.authTag as string | undefined) ?? (record.tag as string | undefined);
-  const key = (record.key as string | undefined) ?? (record.secretKey as string | undefined);
-  const encoding = record.encoding as "base64" | "hex" | undefined;
+    (encryptedBlock.ciphertext as string | undefined) ??
+    (encryptedBlock.encrypted as string | undefined) ??
+    (root.ciphertext as string | undefined) ??
+    (root.encryptedData as string | undefined) ??
+    (root.data as string | undefined);
+
+  const iv =
+    (encryptedBlock.iv as string | undefined) ??
+    (encryptedBlock.initializationVector as string | undefined) ??
+    (root.iv as string | undefined);
+
+  const authTag =
+    (encryptedBlock.authTag as string | undefined) ??
+    (encryptedBlock.tag as string | undefined) ??
+    (root.authTag as string | undefined);
+
+  const key =
+    (data.secretKey as string | undefined) ??
+    (root.secretKey as string | undefined) ??
+    (root.key as string | undefined);
+
+  const encoding =
+    (data.encoding as "base64" | "hex" | undefined) ??
+    (encryptedBlock.encoding as "base64" | "hex" | undefined) ??
+    (root.encoding as "base64" | "hex" | undefined);
 
   if (!ciphertext || !iv || !authTag || !key) {
     throw new AppError("INVALID_PAYLOAD", "Payload criptografado incompleto");
