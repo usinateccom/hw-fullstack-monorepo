@@ -1,10 +1,50 @@
 import React, { useMemo, useState } from "https://esm.sh/react@18.3.1";
 import { createRoot } from "https://esm.sh/react-dom@18.3.1/client";
 
-const MOCK_USERS = [
-  { nome: "Ana Souza", email: "ana.souza@example.com", phone: "+55 11 99999-1001" },
-  { nome: "Bruno Lima", email: "bruno.lima@example.com", phone: "+55 11 99999-1002" }
-];
+const API_BASE_URL = globalThis.__API_BASE_URL ?? "http://localhost:3001";
+
+function parseUsers(payload) {
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+
+  if (Array.isArray(payload?.users)) {
+    return payload.users;
+  }
+
+  if (Array.isArray(payload?.data?.users)) {
+    return payload.data.users;
+  }
+
+  return [];
+}
+
+function toUiError(error) {
+  if (error && typeof error === "object" && "message" in error) {
+    return String(error.message);
+  }
+
+  return "Erro inesperado ao processar solicitacao.";
+}
+
+async function callApi(path, init) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...init,
+    headers: {
+      "content-type": "application/json",
+      ...(init?.headers ?? {})
+    }
+  });
+
+  const body = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message = body?.error?.message ?? "Falha de comunicacao com backend";
+    throw new Error(message);
+  }
+
+  return body;
+}
 
 function App() {
   const [users, setUsers] = useState([]);
@@ -19,11 +59,12 @@ function App() {
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 250));
-      setUsers(MOCK_USERS);
-      setMessage(`Tabela preenchida com ${MOCK_USERS.length} registro(s).`);
-    } catch {
-      setError("Falha ao executar fluxo.");
+      const payload = await callApi("/users/execute", { method: "POST", body: "{}" });
+      const nextUsers = parseUsers(payload);
+      setUsers(nextUsers);
+      setMessage(`Tabela preenchida com ${nextUsers.length} registro(s).`);
+    } catch (err) {
+      setError(toUiError(err));
     } finally {
       setLoading(false);
     }
@@ -34,11 +75,11 @@ function App() {
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 120));
+      await callApi("/users/clear", { method: "POST", body: "{}" });
       setUsers([]);
-      setMessage("Tabela limpa.");
-    } catch {
-      setError("Falha ao limpar dados.");
+      setMessage("Tabela limpa e banco resetado.");
+    } catch (err) {
+      setError(toUiError(err));
     } finally {
       setLoading(false);
     }
@@ -54,7 +95,7 @@ function App() {
       React.createElement(
         "p",
         { className: "subtitle" },
-        "Tabela responsiva com atualizacao dinamica (sem reload)."
+        "Clique em Executar para chamar o backend e preencher a tabela sem reload."
       ),
       React.createElement(
         "div",
@@ -109,7 +150,7 @@ function App() {
               ? users.map((user) =>
                   React.createElement(
                     "tr",
-                    { key: user.email },
+                    { key: `${user.email}-${user.nome}` },
                     React.createElement("td", null, user.nome),
                     React.createElement("td", null, user.email),
                     React.createElement("td", null, user.phone)
