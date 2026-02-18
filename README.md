@@ -1,42 +1,63 @@
-# H&W Fullstack Test — Bun Monorepo (Fastify + React + n8n + Postgres)
+# H&W Fullstack Test - Bun Monorepo
 
-This repository implements the required pipeline:
-1) Backend calls a secure endpoint returning AES-256-GCM encrypted payload
-2) Backend decrypts the payload (AES-256-GCM)
-3) Backend forwards decrypted users to an n8n webhook
-4) n8n persists users in PostgreSQL and returns persisted data
-5) Frontend renders a `<table>` with the users and supports:
-   - **Executar**: runs the pipeline and updates UI dynamically (no reload)
-   - **Limpar**: clears UI dynamically (no reload) and triggers an n8n workflow to truncate `users`
+Pipeline implemented in this repository:
+1. Backend fetches encrypted payload from secure endpoint.
+2. Backend decrypts AES-256-GCM payload.
+3. Backend forwards decrypted users to n8n ingest webhook.
+4. n8n persists users in PostgreSQL and returns persisted data.
+5. Frontend displays users in a dynamic `<table>` with `Executar` and `Limpar` (no page reload).
 
-## Repo Layout
-- `packages/backend/api`: Bun + Fastify API (DDD + Japa)
-- `packages/frontend/web`: React UI (Jest)
-- `packages/shared/contracts`: shared types/schemas
-- `packages/tooling/workflows`: n8n workflow exports + docs
-- `packages/tooling/rag`: local docs search (bonus)
-- `docs/`: architecture, api, deploy, evidence pack
-- `instructions/`, `.codex/`, `.gemini/`, `AGENTS.md`: agentic development policies
+## Live URLs
+- Frontend: `PENDING`
+- Backend: `PENDING`
 
-## Quickstart
-See `PROJECT-SETUP.md`.
+## Tech stack
+- Backend: Bun + Fastify (DDD-ish boundaries)
+- Frontend: React UI (ESM runtime) served by Bun static server
+- Workflows: n8n (ingest/list/clear)
+- Database: PostgreSQL
 
-## Commands
-From repo root:
-- `bun install`
-- `bun run dev`
-- `bun run test`
-- `bun run lint`
-- `bun run typecheck`
-- `bun run rag:index`
-- `bun run rag:search "n8n webhook"`
+## Monorepo layout
+- `packages/backend/api`
+- `packages/frontend/web`
+- `packages/tooling/workflows/exported`
+- `infra/sql/users.sql`
+- `docs/` and `docs/evidence/`
 
-## Evidence Pack
-All milestone proofs live under:
-- `docs/evidence/`
+## Local run (Linux/WSL)
+Detailed steps: `PROJECT-SETUP.md`
 
-## GitHub Automation
-Auto-create labels, milestones and issues from `.github/issues/*.md` via:
+Quick commands:
 ```bash
-./scripts/gh-bootstrap.sh <repo-name> public
+bun install
+
+# backend
+cd packages/backend/api
+cp .env.example .env
+bun run dev
+
+# frontend
+cd ../frontend/web
+# edit runtime-config.js if needed
+globalThis.__API_BASE_URL = "http://localhost:3001"
+bun run dev
 ```
+
+## Validation
+From root:
+```bash
+bun run test
+bun run lint
+bun run typecheck
+```
+
+## Evidence pack
+- M0: `docs/evidence/M0-setup.md`, `docs/evidence/M0-policy.md`
+- M1: `docs/evidence/M1-db.md`, `docs/evidence/M1-n8n.md`
+- M2: `docs/evidence/M2-crypto.md`
+- M3: `docs/evidence/M3-ui.md`
+- M4: `docs/evidence/M4-deploy.md`
+
+## Notes about current sandbox
+- Cloud deploy and GitHub PR creation require external network and are blocked in this environment.
+- Commands and placeholders for final online proof are already documented.

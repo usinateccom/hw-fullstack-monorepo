@@ -42,5 +42,17 @@ curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/
 - `[ ] execute flow screenshot`
 - `[ ] clear flow screenshot`
 
+## M4-03 - final reviewer pack
+
+### Reviewer quickcheck
+1. Open frontend URL.
+2. Click `Executar` and verify dynamic table population.
+3. Click `Limpar` and verify table clears without reload.
+4. Call backend `/health` and confirm `200`.
+
+### Remaining external actions
+- Publish backend and frontend URLs.
+- Attach screenshots and curl outputs above.
+
 ### Notes
-- Deployment actions are pending due network restrictions in the current sandbox.
+- Deployment and GitHub publishing are pending due network restrictions in the current sandbox.
