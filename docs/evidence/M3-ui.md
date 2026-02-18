@@ -14,10 +14,19 @@
 - Loading and error states implemented in UI.
 - Buttons are disabled while loading to avoid flicker and duplicate requests.
 
+## M3-03 - tests
+- Added deterministic frontend transition tests:
+  - execute populates table state
+  - clear empties state
+  - loading disables actions
+- Added Jest bootstrap placeholder command (`test:jest`) for environments with package registry access.
+
 ## Commands
 ```bash
 cd packages/frontend/web
 bun run dev
+bun run test
+bun run test:jest
 ```
 
 ## E2E checklist

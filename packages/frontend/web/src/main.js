@@ -1,5 +1,14 @@
 import React, { useMemo, useState } from "https://esm.sh/react@18.3.1";
 import { createRoot } from "https://esm.sh/react-dom@18.3.1/client";
+import {
+  applyClearSuccess,
+  applyExecuteSuccess,
+  applyFailure,
+  canClear,
+  canExecute,
+  initialUiState,
+  startLoading
+} from "./state.js";
 
 const API_BASE_URL = globalThis.__API_BASE_URL ?? "http://localhost:3001";
 
@@ -47,41 +56,34 @@ async function callApi(path, init) {
 }
 
 function App() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("Pronto para executar o fluxo.");
+  const [state, setState] = useState(initialUiState());
 
-  const hasUsers = useMemo(() => users.length > 0, [users]);
+  const hasUsers = useMemo(() => state.users.length > 0, [state.users.length]);
 
   async function handleExecute() {
-    setLoading(true);
-    setError("");
+    if (!canExecute(state)) return;
+
+    setState((prev) => startLoading(prev));
 
     try {
       const payload = await callApi("/users/execute", { method: "POST", body: "{}" });
       const nextUsers = parseUsers(payload);
-      setUsers(nextUsers);
-      setMessage(`Tabela preenchida com ${nextUsers.length} registro(s).`);
+      setState((prev) => applyExecuteSuccess(prev, nextUsers));
     } catch (err) {
-      setError(toUiError(err));
-    } finally {
-      setLoading(false);
+      setState((prev) => applyFailure(prev, toUiError(err)));
     }
   }
 
   async function handleClear() {
-    setLoading(true);
-    setError("");
+    if (!canClear(state)) return;
+
+    setState((prev) => startLoading(prev));
 
     try {
       await callApi("/users/clear", { method: "POST", body: "{}" });
-      setUsers([]);
-      setMessage("Tabela limpa e banco resetado.");
+      setState((prev) => applyClearSuccess(prev));
     } catch (err) {
-      setError(toUiError(err));
-    } finally {
-      setLoading(false);
+      setState((prev) => applyFailure(prev, toUiError(err)));
     }
   }
 
@@ -105,26 +107,26 @@ function App() {
           {
             type: "button",
             className: "primary",
-            disabled: loading,
+            disabled: state.loading,
             onClick: handleExecute
           },
-          loading ? "Executando..." : "Executar"
+          state.loading ? "Executando..." : "Executar"
         ),
         React.createElement(
           "button",
           {
             type: "button",
             className: "secondary",
-            disabled: loading || !hasUsers,
+            disabled: state.loading || !hasUsers,
             onClick: handleClear
           },
-          loading ? "Aguarde..." : "Limpar"
+          state.loading ? "Aguarde..." : "Limpar"
         )
       ),
       React.createElement(
         "p",
-        { className: `status${error ? " error" : ""}` },
-        error || message
+        { className: `status${state.error ? " error" : ""}` },
+        state.error || state.message
       ),
       React.createElement(
         "div",
@@ -147,7 +149,7 @@ function App() {
             "tbody",
             null,
             hasUsers
-              ? users.map((user) =>
+              ? state.users.map((user) =>
                   React.createElement(
                     "tr",
                     { key: `${user.email}-${user.nome}` },
