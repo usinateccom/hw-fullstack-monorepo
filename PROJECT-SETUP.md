@@ -39,18 +39,18 @@ sudo systemctl enable --now postgresql
 
 ### 3.2 Create DB
 ```bash
-sudo -u postgres psql
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d postgres
 ```
 ```sql
-CREATE USER hw_user WITH PASSWORD 'hw_pass';
-CREATE DATABASE hw_db OWNER hw_user;
+ALTER USER postgres WITH PASSWORD 'Tst1320';
+CREATE DATABASE hw_fullstack_db OWNER postgres;
 \q
 ```
 
 ### 3.3 Apply schema
 ```bash
-psql "postgresql://hw_user:hw_pass@localhost:5432/hw_db" -f infra/sql/users.sql
-psql "postgresql://hw_user:hw_pass@localhost:5432/hw_db" -c "SELECT count(*) FROM users;"
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -f infra/sql/users.sql
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
 ```
 
 ## 4) n8n local setup

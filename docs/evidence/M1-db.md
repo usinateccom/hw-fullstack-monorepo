@@ -2,9 +2,9 @@
 
 ## Commands used
 ```bash
-psql "postgresql://hw_user:hw_pass@localhost:5432/hw_db" -f infra/sql/users.sql
-psql "postgresql://hw_user:hw_pass@localhost:5432/hw_db" -c "\\d users"
-psql "postgresql://hw_user:hw_pass@localhost:5432/hw_db" -c "SELECT count(*) FROM users;"
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -f infra/sql/users.sql
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "\\d users"
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
 ```
 
 ## Expected outputs

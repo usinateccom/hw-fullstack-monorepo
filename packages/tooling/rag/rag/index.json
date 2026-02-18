@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-02-18T16:21:03.353Z",
+  "generatedAt": "2026-02-18T16:59:20.315Z",
   "files": [
     {
       "path": "docs/workflows.md",
@@ -27,7 +27,7 @@
     },
     {
       "path": "docs/evidence/M1-db.md",
-      "content": "# Evidence: M1-db.md\n\n## Commands used\n```bash\npsql \"postgresql://hw_user:hw_pass@localhost:5432/hw_db\" -f infra/sql/users.sql\npsql \"postgresql://hw_user:hw_pass@localhost:5432/hw_db\" -c \"\\\\d users\"\npsql \"postgresql://hw_user:hw_pass@localhost:5432/hw_db\" -c \"SELECT count(*) FROM users;\"\n```\n\n## Expected outputs\n\n### `\\d users`\n```text\n                        Table \"public.users\"\n Column |          Type          | Collation | Nullable |              Default\n--------+------------------------+-----------+----------+-----------------------------------\n id     | integer                |           | not null | nextval('users_id_seq'::regclass)\n nome   | character varying(128) |           | not null |\n email  | character varying(255) |           | not null |\n phone  | character varying(20)  |           | not null |\nIndexes:\n    \"users_pkey\" PRIMARY KEY, btree (id)\n    \"users_email_key\" UNIQUE CONSTRAINT, btree (email)\n```\n\n### `SELECT count(*) FROM users;`\n```text\n count\n-------\n     0\n(1 row)\n```\n"
+      "content": "# Evidence: M1-db.md\n\n## Commands used\n```bash\nPGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -f infra/sql/users.sql\nPGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c \"\\\\d users\"\nPGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c \"SELECT count(*) FROM users;\"\n```\n\n## Expected outputs\n\n### `\\d users`\n```text\n                        Table \"public.users\"\n Column |          Type          | Collation | Nullable |              Default\n--------+------------------------+-----------+----------+-----------------------------------\n id     | integer                |           | not null | nextval('users_id_seq'::regclass)\n nome   | character varying(128) |           | not null |\n email  | character varying(255) |           | not null |\n phone  | character varying(20)  |           | not null |\nIndexes:\n    \"users_pkey\" PRIMARY KEY, btree (id)\n    \"users_email_key\" UNIQUE CONSTRAINT, btree (email)\n```\n\n### `SELECT count(*) FROM users;`\n```text\n count\n-------\n     0\n(1 row)\n```\n"
     },
     {
       "path": "docs/evidence/M0-policy.md",
