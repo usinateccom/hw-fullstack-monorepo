@@ -20,7 +20,13 @@ declare const Bun: {
 
 declare module "bun:test" {
   export function describe(name: string, fn: () => void): void;
-  export function it(name: string, fn: () => void): void;
+  export function it(name: string, fn: () => void | Promise<void>): void;
+  export function afterEach(fn: () => void): void;
+  export const mock: {
+    (fn?: (...args: any[]) => any): any;
+    restore(): void;
+    module(name: string, factory: () => any): void;
+  };
   export function expect(value: any): {
     toEqual(other: any): void;
     toBeInstanceOf(ctor: any): void;
