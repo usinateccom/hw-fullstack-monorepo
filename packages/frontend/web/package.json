@@ -6,6 +6,7 @@
     "dev": "bun src/server.ts",
     "start": "bun src/server.ts",
     "test": "bun test",
+    "test:jest": "bun src/testing/run-jest.ts",
     "lint": "echo \"TODO: lint\"",
     "typecheck": "echo \"TODO: typecheck\""
   }
