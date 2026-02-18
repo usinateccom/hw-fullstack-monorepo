@@ -3,7 +3,7 @@
 This repository implements a fullstack flow:
 - Backend (Bun + Fastify) decrypts AES-256-GCM and orchestrates n8n webhooks.
 - n8n persists users into PostgreSQL.
-- Frontend renders a dynamic `<table>` and provides `Executar` + `Limpar` without reload.
+- Frontend (React + Vite) renders a dynamic `<table>` and provides `Executar` + `Limpar` without reload.
 
 Docker is optional only.
 
@@ -20,12 +20,6 @@ sudo apt install -y git curl unzip jq
 curl -fsSL https://bun.sh/install | bash
 source ~/.bashrc
 bun -v
-```
-
-### 1.3 Optional GitHub CLI
-```bash
-sudo apt install -y gh
-gh --version
 ```
 
 ## 2) Clone and install
@@ -78,7 +72,7 @@ Import JSONs from:
 - `packages/tooling/workflows/exported/list-users.json`
 - `packages/tooling/workflows/exported/clear-users.json`
 
-Configure Postgres credentials in each workflow node.
+Configure Postgres credentials in each workflow.
 
 ## 5) Backend config and run
 
@@ -100,20 +94,19 @@ Set in `.env`:
 bun run dev
 ```
 
-## 6) Frontend run
+## 6) Frontend config and run
 
-### 6.1 Runtime backend URL
-Edit:
-- `packages/frontend/web/runtime-config.js`
-
-Example:
-```js
-globalThis.__API_BASE_URL = "http://localhost:3001";
+### 6.1 Environment
+```bash
+cd packages/frontend/web
+cp .env.example .env
 ```
+
+Set in `.env`:
+- `VITE_API_BASE_URL=http://localhost:3001`
 
 ### 6.2 Start frontend
 ```bash
-cd packages/frontend/web
 bun run dev
 ```
 

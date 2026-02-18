@@ -1,67 +1,52 @@
 # Evidence: M2-crypto.md
 
-## Spec extraction
-- Source used: local PDF (`docs/spec/test-spec.pdf`, gitignored).
-- Architecture + checklist documented in `docs/architecture.md`.
-- Payload field names/encodings are not explicitly defined in the PDF; assumptions are listed in architecture docs.
+## Spec extraction and payload validation
+- Source used: `docs/spec/test-spec.pdf`.
+- Endpoint queried:
+  - `GET https://n8n-apps.nlabshealth.com/webhook/data-5dYbrVSlMVJxfmco`
+- Observed keys:
+  - top: `success`, `data`
+  - data: `algorithm`, `encrypted`, `secretKey`
+  - encrypted: `iv`, `authTag`, `encrypted`
 
 ## Backend implementation
 ### M2-01
 - Fastify/Bun skeleton with `GET /health`.
 
 ### M2-02
-- AES-256-GCM decryptor (`Aes256GcmDecryptor`) with fail-closed errors.
+- AES-256-GCM decryptor (`Aes256GcmDecryptor`) with:
+  - nested payload support (`data.encrypted.*` + `data.secretKey`)
+  - `hex`/`base64` decoding support
+  - strict key-length validation and fail-closed errors
 - Secure endpoint client with timeout and safe error mapping.
-- Deterministic unit tests with fixture (no live endpoint dependency).
+- Unit tests for base64 fixtures and nested hex payload fixtures.
 
 ### M2-03
-- `POST /users/execute` flow:
-  - fetch secure payload
-  - decrypt AES-256-GCM
-  - forward users to `N8N_WEBHOOK_INGEST_URL`
-  - return persisted payload from n8n
-- `POST /users/clear` flow:
-  - call `N8N_WEBHOOK_CLEAR_URL`
-  - return `{ cleared: true }`
-- Retry + timeout for n8n calls:
-  - retries: `HTTP_RETRIES` (default 3)
-  - timeout: `HTTP_TIMEOUT_MS` (default 10000 ms)
+- `POST /users/execute`: fetch -> decrypt -> n8n ingest -> return payload.
+- `POST /users/clear`: n8n clear -> `{ cleared: true }`.
+- Timeout + retry on n8n client:
+  - `HTTP_TIMEOUT_MS`
+  - `HTTP_RETRIES`
 - Consistent error envelope:
-  - `{ "error": { "code": "...", "message": "...", "details": {} } }`
+  - `{ "error": { "code", "message", "details?" } }`
 
 ### M2-04
-- Added deterministic route contract tests for:
+- Japa integration tests added for:
   - `GET /health`
   - `POST /users/execute`
   - `POST /users/clear`
-- Added Japa bootstrap placeholders:
-  - `packages/backend/api/japaFile.ts`
-  - `packages/backend/api/tests/japa/README.md`
-  - `bun run test:japa` (safe no-op when `@japa/runner` is unavailable)
-
-## Curl examples (localhost)
-```bash
-curl -i http://localhost:3001/health
-
-curl -i -X POST http://localhost:3001/users/execute \
-  -H 'content-type: application/json'
-
-curl -i -X POST http://localhost:3001/users/clear \
-  -H 'content-type: application/json'
-```
+- Deterministic Bun unit/integration tests remain for core components.
 
 ## Commands
 ```bash
 bun run test
-bun run test:japa
 bun run lint
 bun run typecheck
 ```
 
-## Outputs / notes
-- `test/lint/typecheck` executed locally and passing in this branch.
-- Endpoint lookup and GitHub operations from this sandbox can fail due DNS/network restrictions.
-- Live call command for evaluator environment:
+## Curl examples (localhost)
 ```bash
-curl -s "$SECURE_ENDPOINT_URL" | jq
+curl -i http://localhost:3001/health
+curl -i -X POST http://localhost:3001/users/execute -H 'content-type: application/json' -d '{}'
+curl -i -X POST http://localhost:3001/users/clear -H 'content-type: application/json' -d '{}'
 ```

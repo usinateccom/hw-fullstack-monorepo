@@ -1,4 +1,9 @@
-// Japa bootstrap placeholder.
-// Real execution depends on installing @japa/runner in environments with registry access.
+import { assert } from "@japa/assert";
+import { configure, run } from "@japa/runner";
 
-export default {};
+configure({
+  files: ["tests/japa/**/*.japa.ts"],
+  plugins: [assert()]
+});
+
+run();

@@ -12,27 +12,29 @@ Fullstack pipeline with Bun + Fastify backend, n8n workflows, PostgreSQL persist
 6. Frontend renders rows in a `<table>` without reloading.
 7. Frontend `POST /users/clear` triggers n8n clear webhook (TRUNCATE) and clears table state.
 
-## Secure endpoint details (from spec)
+## Secure endpoint details (validated)
 - Endpoint URL: `https://n8n-apps.nlabshealth.com/webhook/data-5dYbrVSlMVJxfmco`
-- Method: `GET` (assumption based on webhook-style data endpoint; validate during runtime)
-- Response: encrypted data using AES-256-GCM.
-- Spec note: response includes initialization vectors and secret keys for decryption.
+- Method: `GET`
+- Response top-level keys: `success`, `data`
+- Encryption metadata fields:
+  - `data.algorithm`
+  - `data.secretKey`
+  - `data.encrypted.iv`
+  - `data.encrypted.authTag`
+  - `data.encrypted.encrypted`
 
 ## Encrypted payload contract
-The PDF defines AES-256-GCM usage but does not publish exact JSON field names or encodings.
+AES-256-GCM decryptor supports:
+- nested secure-endpoint shape above
+- flat fixture shape (`ciphertext`, `iv`, `authTag`, `key`)
 
-### Required fields expected by decryptor
-- `ciphertext` (encrypted bytes)
-- `iv` (initialization vector)
-- `authTag` (authentication tag)
-- `key` (256-bit key)
-
-### Encoding assumptions
-- Default parser strategy: try base64 first, then hex when needed.
-- Decryptor must fail closed for invalid/missing fields or auth failure.
+### Encoding behavior
+- auto-detects `hex` and `base64`
+- validates 32-byte key length
+- fail-closed on invalid auth tag/invalid payload
 
 ## User model and mapping
-Expected user fields (spec DB contract):
+Expected user fields:
 - `nome`
 - `email`
 - `phone`
@@ -65,8 +67,3 @@ CREATE TABLE users (
 - UI updates dynamically without full page reload.
 - Responsive layout for different devices.
 - Cloud deployment for frontend and backend with public URLs.
-
-## Explicit assumptions
-- Secure endpoint payload field names/encodings are inferred at runtime because PDF omits exact format.
-- n8n webhook paths (`ingest-users`, `list-users`, `clear-users`) are implementation-defined for this repo.
-- Local setup remains Docker-optional only.

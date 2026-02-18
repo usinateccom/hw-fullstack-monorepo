@@ -3,7 +3,7 @@ import { describe, expect, it } from "bun:test";
 import { Aes256GcmDecryptor } from "../../src/application/services/aes256gcm-decryptor";
 import { AppError } from "../../src/domain/errors/app-error";
 
-function fixture() {
+function fixtureBase64() {
   const users = [
     { nome: "Ana", email: "ana@example.com", phone: "+55 11 90000-0001" },
     { nome: "Bruno", email: "bruno@example.com", phone: "+55 11 90000-0002" }
@@ -29,9 +29,42 @@ function fixture() {
   };
 }
 
+function fixtureHexNested() {
+  const users = [{ nome: "Carlos", email: "carlos@example.com", phone: "111" }];
+  const key = Buffer.from("12345678901234567890123456789012", "utf8");
+  const iv = Buffer.from("123456789012", "utf8");
+  const cipher = createCipheriv("aes-256-gcm", key, iv);
+  const ciphertext = Buffer.concat([cipher.update(JSON.stringify(users), "utf8"), cipher.final()]);
+
+  return {
+    users,
+    payload: {
+      success: true,
+      data: {
+        algorithm: "aes-256-gcm",
+        secretKey: key.toString("hex"),
+        encrypted: {
+          iv: iv.toString("hex"),
+          authTag: cipher.getAuthTag().toString("hex"),
+          encrypted: ciphertext.toString("hex")
+        }
+      }
+    }
+  };
+}
+
 describe("Aes256GcmDecryptor", () => {
-  it("decrypts valid payload", () => {
-    const { users, payload } = fixture();
+  it("decrypts valid base64 payload", () => {
+    const { users, payload } = fixtureBase64();
+    const decryptor = new Aes256GcmDecryptor();
+
+    const output = decryptor.decryptUsers(payload);
+
+    expect(output).toEqual(users);
+  });
+
+  it("decrypts nested hex payload from secure endpoint shape", () => {
+    const { users, payload } = fixtureHexNested();
     const decryptor = new Aes256GcmDecryptor();
 
     const output = decryptor.decryptUsers(payload);
@@ -52,7 +85,7 @@ describe("Aes256GcmDecryptor", () => {
   });
 
   it("fails when auth tag is tampered", () => {
-    const { payload } = fixture();
+    const { payload } = fixtureBase64();
     const decryptor = new Aes256GcmDecryptor();
 
     const broken = {

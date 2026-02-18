@@ -11,7 +11,7 @@ export type AppConfig = {
 };
 
 function required(name: string, fallback?: string): string {
-  const value = Bun.env[name] ?? fallback;
+  const value = process.env[name] ?? fallback;
   if (!value) {
     throw new Error(`Missing env var: ${name}`);
   }
