@@ -1,0 +1,11 @@
+{
+  "name": "@frontend/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo \"TODO: start React app\"",
+    "test": "echo \"TODO: run Jest\"",
+    "lint": "echo \"TODO: lint\"",
+    "typecheck": "echo \"TODO: typecheck\""
+  }
+}

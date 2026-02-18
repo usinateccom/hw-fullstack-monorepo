@@ -1,0 +1,1 @@
+-- TODO: Insert the exact `users` table schema from the test PDF here.

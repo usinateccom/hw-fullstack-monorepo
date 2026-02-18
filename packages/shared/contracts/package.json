@@ -1,0 +1,10 @@
+{
+  "name": "@shared/contracts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "echo \"TODO\"",
+    "lint": "echo \"TODO\"",
+    "typecheck": "echo \"TODO\""
+  }
+}

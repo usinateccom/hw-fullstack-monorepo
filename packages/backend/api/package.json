@@ -1,0 +1,11 @@
+{
+  "name": "@backend/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo \"TODO: start Fastify with Bun\"",
+    "test": "echo \"TODO: run Japa tests\"",
+    "lint": "echo \"TODO: lint\"",
+    "typecheck": "echo \"TODO: typecheck\""
+  }
+}

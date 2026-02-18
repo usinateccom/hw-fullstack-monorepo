@@ -1,0 +1,8 @@
+{
+  "name": "@tooling/workflows",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "echo \"TODO\""
+  }
+}

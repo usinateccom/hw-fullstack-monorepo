@@ -1,0 +1,23 @@
+{
+  "name": "hw-fullstack-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/backend/*",
+    "packages/frontend/*",
+    "packages/shared/*",
+    "packages/tooling/*"
+  ],
+  "scripts": {
+    "bootstrap": "bun install",
+    "dev": "lerna run dev --parallel",
+    "test": "lerna run test --stream",
+    "lint": "lerna run lint --stream",
+    "typecheck": "lerna run typecheck --stream",
+    "rag:index": "lerna run rag:index --scope @tooling/rag",
+    "rag:search": "lerna run rag:search --scope @tooling/rag --",
+    "gh:bootstrap": "bash scripts/gh-bootstrap.sh"
+  },
+  "devDependencies": {
+    "lerna": "^8.0.0"
+  }
+}
