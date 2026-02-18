@@ -6,6 +6,7 @@
     "dev": "bun --watch src/server.ts",
     "start": "bun src/server.ts",
     "test": "bun test",
+    "test:japa": "bun src/testing/run-japa.ts",
     "lint": "../../../node_modules/.bun/typescript@5.9.3/node_modules/typescript/bin/tsc --noEmit",
     "typecheck": "../../../node_modules/.bun/typescript@5.9.3/node_modules/typescript/bin/tsc --noEmit"
   },
