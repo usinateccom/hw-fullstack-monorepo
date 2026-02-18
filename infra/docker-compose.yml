@@ -1,2 +1,32 @@
-# OPTIONAL (Docker)
-# TODO
+# OPTIONAL Docker path for local convenience only.
+# The project must run without Docker as primary path.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: hw_user
+      POSTGRES_PASSWORD: hw_pass
+      POSTGRES_DB: hw_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./sql/users.sql:/docker-entrypoint-initdb.d/01-users.sql:ro
+
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_HOST: localhost
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - postgres
+
+volumes:
+  pg_data:
+  n8n_data:

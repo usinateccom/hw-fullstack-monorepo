@@ -11,7 +11,7 @@ bun run rag:search "TRUNCATE users"
 
 ### Observed outputs
 - Index generated at `packages/tooling/rag/rag/index.json`
-- Indexed files: `33`
+- Indexed files: `34`
 - Search returns ranked matches with:
   - score
   - file path
