@@ -33,6 +33,8 @@ bun install
 ```bash
 bun run start:all
 ```
+Note:
+- If your shell is on Node `22.11.x`, `start:all` will auto-use Node `22.12.0` from nvm when available.
 
 ### Optional flags
 ```bash
@@ -93,6 +95,18 @@ Import JSONs from:
 
 Configure Postgres credentials in each workflow.
 
+### 4.3 Publish workflows (CLI) and restart n8n
+If you imported workflows by CLI, publish each one and restart n8n to apply production webhooks:
+```bash
+N8N_USER_FOLDER=~/.n8n-test N8N_ENCRYPTION_KEY=<your-key> bunx n8n list:workflow
+N8N_USER_FOLDER=~/.n8n-test N8N_ENCRYPTION_KEY=<your-key> bunx n8n publish:workflow --id <workflow-id>
+```
+Important:
+- `publish:workflow` only takes effect after n8n restart.
+- Stop n8n (`Ctrl+C`) and start again with the same `N8N_USER_FOLDER` and `N8N_ENCRYPTION_KEY`.
+- In n8n UI, open each workflow, ensure Postgres nodes use `postgres-local`, save, and activate.
+- Copy the **Production URL** from each Webhook node (ingest/list/clear).
+
 ## 5) Backend config and run
 
 ### 5.1 Environment
@@ -107,9 +121,9 @@ API_PORT=3001
 API_HOST=0.0.0.0
 CORS_ORIGIN=http://localhost:5173
 SECURE_ENDPOINT_URL=https://n8n-apps.nlabshealth.com/webhook/data-5dYbrVSlMVJxfmco
-N8N_WEBHOOK_INGEST_URL=http://localhost:5678/webhook/ingest-users
-N8N_WEBHOOK_LIST_URL=http://localhost:5678/webhook/list-users
-N8N_WEBHOOK_CLEAR_URL=http://localhost:5678/webhook/clear-users
+N8N_WEBHOOK_INGEST_URL=<copy-from-n8n-production-webhook>
+N8N_WEBHOOK_LIST_URL=<copy-from-n8n-production-webhook>
+N8N_WEBHOOK_CLEAR_URL=<copy-from-n8n-production-webhook>
 HTTP_TIMEOUT_MS=10000
 HTTP_RETRIES=3
 ```
@@ -151,6 +165,12 @@ chmod +x scripts/local-e2e-smoke.sh
 ./scripts/local-e2e-smoke.sh
 ```
 
+Seed multiple fixture users directly in PostgreSQL:
+```bash
+bun run seed:users
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
+```
+
 ## 8) Optional Docker path
 ```bash
 cd infra
@@ -170,3 +190,21 @@ Create this credential in n8n UI:
    - `SSL=off`
 4. Save as `postgres-local`.
 5. Open each imported workflow and select this credential in all Postgres nodes.
+
+## 10) Final local proof (issue #17)
+With n8n and backend running:
+```bash
+curl -s -X POST http://127.0.0.1:3001/users/execute -H 'content-type: application/json' -d '{}'
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
+
+curl -s -X POST http://127.0.0.1:3001/users/clear -H 'content-type: application/json' -d '{}'
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
+```
+Expected:
+- After execute: `count(*) > 0`
+- After clear: `count(*) = 0`
+
+If both counts remain `0`, verify:
+1. backend is running (`curl http://127.0.0.1:3001/health`)
+2. webhook URLs in backend `.env` are copied from n8n production URL
+3. workflows are saved + activated in n8n after restart
