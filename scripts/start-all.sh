@@ -17,6 +17,9 @@ N8N_USER_FOLDER="${N8N_USER_FOLDER:-/tmp/n8n-home}"
 N8N_ENCRYPTION_KEY="${N8N_ENCRYPTION_KEY:-local-dev-key}"
 N8N_PORT="${N8N_PORT:-5678}"
 N8N_LISTEN_ADDRESS="${N8N_LISTEN_ADDRESS:-127.0.0.1}"
+INCLUDE_N8N="${INCLUDE_N8N:-1}"
+INCLUDE_BACKEND="${INCLUDE_BACKEND:-1}"
+INCLUDE_FRONTEND="${INCLUDE_FRONTEND:-1}"
 
 mkdir -p "$N8N_USER_FOLDER"
 
@@ -62,27 +65,29 @@ check_port_available() {
   fi
 }
 
-NODE_VERSION="$(node -v 2>/dev/null || true)"
-if [[ -n "$NODE_VERSION" ]]; then
-  NODE_MAJOR="$(echo "$NODE_VERSION" | sed 's/^v//' | cut -d. -f1)"
-  NODE_MINOR="$(echo "$NODE_VERSION" | sed 's/^v//' | cut -d. -f2)"
-  if [[ "$NODE_MAJOR" -lt 20 ]]; then
-    echo "Node >= 20.19 or 22.12 is required (found $NODE_VERSION)." >&2
-    exit 1
-  fi
-  if [[ "$NODE_MAJOR" -eq 20 && "$NODE_MINOR" -lt 19 ]]; then
-    echo "Node >= 20.19 is required (found $NODE_VERSION)." >&2
-    exit 1
-  fi
-  if [[ "$NODE_MAJOR" -eq 22 && "$NODE_MINOR" -lt 12 ]]; then
-    echo "Node >= 22.12 is required (found $NODE_VERSION)." >&2
-    exit 1
+if [[ "$INCLUDE_FRONTEND" -eq 1 ]]; then
+  NODE_VERSION="$(node -v 2>/dev/null || true)"
+  if [[ -n "$NODE_VERSION" ]]; then
+    NODE_MAJOR="$(echo "$NODE_VERSION" | sed 's/^v//' | cut -d. -f1)"
+    NODE_MINOR="$(echo "$NODE_VERSION" | sed 's/^v//' | cut -d. -f2)"
+    if [[ "$NODE_MAJOR" -lt 20 ]]; then
+      echo "Node >= 20.19 or 22.12 is required for frontend/Vite (found $NODE_VERSION)." >&2
+      echo "Tip: nvm install 22.12.0 && nvm use 22.12.0" >&2
+      exit 1
+    fi
+    if [[ "$NODE_MAJOR" -eq 20 && "$NODE_MINOR" -lt 19 ]]; then
+      echo "Node >= 20.19 is required for frontend/Vite (found $NODE_VERSION)." >&2
+      echo "Tip: nvm install 20.19.0 && nvm use 20.19.0" >&2
+      exit 1
+    fi
+    if [[ "$NODE_MAJOR" -eq 22 && "$NODE_MINOR" -lt 12 ]]; then
+      echo "Node >= 22.12 is required for frontend/Vite (found $NODE_VERSION)." >&2
+      echo "Tip: nvm install 22.12.0 && nvm use 22.12.0" >&2
+      echo "Alternative: INCLUDE_FRONTEND=0 bun run start:all" >&2
+      exit 1
+    fi
   fi
 fi
-
-INCLUDE_N8N="${INCLUDE_N8N:-1}"
-INCLUDE_BACKEND="${INCLUDE_BACKEND:-1}"
-INCLUDE_FRONTEND="${INCLUDE_FRONTEND:-1}"
 
 check_port_available "$N8N_PORT"
 check_port_available "${API_PORT:-3001}"
