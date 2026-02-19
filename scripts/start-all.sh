@@ -14,6 +14,10 @@ if ! command -v bunx >/dev/null 2>&1; then
 fi
 
 N8N_USER_FOLDER="${N8N_USER_FOLDER:-/tmp/n8n-home}"
+N8N_CONFIG_FILE="${N8N_USER_FOLDER}/.n8n/config"
+if [[ -z "${N8N_ENCRYPTION_KEY:-}" && -f "$N8N_CONFIG_FILE" ]]; then
+  N8N_ENCRYPTION_KEY="$(sed -n 's/.*"encryptionKey":[[:space:]]*"\([^"]*\)".*/\1/p' "$N8N_CONFIG_FILE" | head -n 1)"
+fi
 N8N_ENCRYPTION_KEY="${N8N_ENCRYPTION_KEY:-local-dev-key}"
 N8N_PORT="${N8N_PORT:-5678}"
 N8N_LISTEN_ADDRESS="${N8N_LISTEN_ADDRESS:-127.0.0.1}"
