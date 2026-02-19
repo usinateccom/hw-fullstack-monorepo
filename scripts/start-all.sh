@@ -70,6 +70,16 @@ check_port_available() {
 }
 
 if [[ "$INCLUDE_FRONTEND" -eq 1 ]]; then
+  # Prefer a compatible nvm Node automatically when available.
+  if command -v node >/dev/null 2>&1; then
+    CURRENT_NODE="$(node -v 2>/dev/null || true)"
+  else
+    CURRENT_NODE=""
+  fi
+  if [[ "$CURRENT_NODE" =~ ^v22\.11\..* ]] && [[ -x "$HOME/.nvm/versions/node/v22.12.0/bin/node" ]]; then
+    export PATH="$HOME/.nvm/versions/node/v22.12.0/bin:$PATH"
+  fi
+
   NODE_VERSION="$(node -v 2>/dev/null || true)"
   if [[ -n "$NODE_VERSION" ]]; then
     NODE_MAJOR="$(echo "$NODE_VERSION" | sed 's/^v//' | cut -d. -f1)"
@@ -93,9 +103,15 @@ if [[ "$INCLUDE_FRONTEND" -eq 1 ]]; then
   fi
 fi
 
-check_port_available "$N8N_PORT"
-check_port_available "${API_PORT:-3001}"
-check_port_available "${VITE_PORT:-5173}"
+if [[ "$INCLUDE_N8N" -eq 1 ]]; then
+  check_port_available "$N8N_PORT"
+fi
+if [[ "$INCLUDE_BACKEND" -eq 1 ]]; then
+  check_port_available "${API_PORT:-3001}"
+fi
+if [[ "$INCLUDE_FRONTEND" -eq 1 ]]; then
+  check_port_available "${VITE_PORT:-5173}"
+fi
 
 log "Starting n8n..."
 if [[ "$INCLUDE_N8N" -eq 1 ]]; then
