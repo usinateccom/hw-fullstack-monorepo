@@ -117,6 +117,12 @@ bun run lint
 bun run typecheck
 ```
 
+Local smoke (backend + n8n + postgres):
+```bash
+chmod +x scripts/local-e2e-smoke.sh
+./scripts/local-e2e-smoke.sh
+```
+
 ## 8) Optional Docker path
 ```bash
 cd infra
