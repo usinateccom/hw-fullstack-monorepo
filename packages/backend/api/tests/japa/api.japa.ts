@@ -40,6 +40,7 @@ test.group("API endpoints", () => {
       secureEndpointClient: { fetchPayload: async () => ({}) },
       n8nWebhookClient: {
         ingestUsers: async () => ({ users: [] }),
+        listUsers: async () => ({ users: [] }),
         clearUsers: async () => ({ cleared: true })
       }
     });
@@ -56,7 +57,8 @@ test.group("API endpoints", () => {
     const app = createApp(config, {
       secureEndpointClient: { fetchPayload: async () => fixture.payload },
       n8nWebhookClient: {
-        ingestUsers: async (users) => ({ users }),
+        ingestUsers: async () => null,
+        listUsers: async () => ({ users: fixture.users }),
         clearUsers: async () => ({ cleared: true })
       }
     });
@@ -72,6 +74,7 @@ test.group("API endpoints", () => {
       secureEndpointClient: { fetchPayload: async () => ({}) },
       n8nWebhookClient: {
         ingestUsers: async () => ({ users: [] }),
+        listUsers: async () => ({ users: [] }),
         clearUsers: async () => ({ cleared: true })
       }
     });

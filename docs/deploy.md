@@ -1,5 +1,18 @@
 # Deployment
 
+This repository uses a local-first validation baseline and a cloud-finalization path.
+
+## CI quality gate (GitHub Actions)
+
+Workflow file:
+- `.github/workflows/ci.yml`
+
+Runs on push/PR to `develop` and `main`:
+- `bun install --frozen-lockfile`
+- `bun run test`
+- `bun run lint`
+- `bun run typecheck`
+
 ## Backend (Fastify + Bun)
 
 ### Recommended platforms
@@ -47,6 +60,16 @@ bun run build
 - `packages/frontend/web/dist`
 
 ### Environment variable
+- `VITE_API_BASE_URL=https://<backend-url>`
+
+### Vercel deployment model
+- Recommended: Vercel Git integration (no custom GH Action required).
+- Project root: `packages/frontend/web`
+- Build command: `bun run build`
+- Output directory: `dist`
+- Install command: `bun install`
+
+### Vercel environment variables
 - `VITE_API_BASE_URL=https://<backend-url>`
 
 ### Frontend publish checks

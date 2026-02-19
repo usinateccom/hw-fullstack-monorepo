@@ -40,7 +40,7 @@ export function createApp(config: AppConfig, deps: CreateAppDeps = {}): FastifyI
 
   const n8nWebhookClient =
     deps.n8nWebhookClient ??
-    new N8nWebhookClient(config.n8nWebhookIngestUrl, config.n8nWebhookClearUrl, {
+    new N8nWebhookClient(config.n8nWebhookIngestUrl, config.n8nWebhookListUrl, config.n8nWebhookClearUrl, {
       timeoutMs: config.httpTimeoutMs,
       retries: config.httpRetries
     });

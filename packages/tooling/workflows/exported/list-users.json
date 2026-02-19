@@ -15,8 +15,10 @@
     },
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT id, nome, email, phone FROM users ORDER BY id ASC;"
+        "operation": "select",
+        "schema": "public",
+        "table": "users",
+        "returnAll": true
       },
       "id": "Postgres_List",
       "name": "Postgres List",
@@ -25,7 +27,7 @@
       "position": [520, 300],
       "credentials": {
         "postgres": {
-          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "id": "postgres_local",
           "name": "postgres-local"
         }
       }
