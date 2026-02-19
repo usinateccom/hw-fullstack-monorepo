@@ -170,6 +170,9 @@ Seed multiple fixture users directly in PostgreSQL:
 bun run seed:users
 PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
 ```
+Note:
+- `seed:users` is optional and not part of official pipeline acceptance.
+- Official flow must be validated via backend endpoints (`/users/execute` and `/users/clear`) using n8n webhooks.
 
 ## 8) Optional Docker path
 ```bash
@@ -208,3 +211,45 @@ If both counts remain `0`, verify:
 1. backend is running (`curl http://127.0.0.1:3001/health`)
 2. webhook URLs in backend `.env` are copied from n8n production URL
 3. workflows are saved + activated in n8n after restart
+
+## 11) Useful command reference
+```bash
+# Full stack
+bun run start:all
+
+# Partial start
+INCLUDE_N8N=0 INCLUDE_FRONTEND=0 bun run start:all
+INCLUDE_N8N=0 INCLUDE_BACKEND=0 bun run start:all
+
+# Populate many fixture users
+bun run seed:users
+
+# DB quick checks
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT id,nome,email,phone FROM users ORDER BY id DESC LIMIT 10;"
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "TRUNCATE TABLE users RESTART IDENTITY;"
+
+# API quick checks
+curl -i http://127.0.0.1:3001/health
+curl -i -X POST http://127.0.0.1:3001/users/execute -H 'content-type: application/json' -d '{}'
+curl -i -X POST http://127.0.0.1:3001/users/clear -H 'content-type: application/json' -d '{}'
+
+# Quality gate
+bun run test
+bun run lint
+bun run typecheck
+```
+
+## 12) Troubleshooting
+- `Node >= 22.12 is required... found v22.11.0`:
+  - run `source ~/.nvm/nvm.sh && nvm use 22.12.0`
+  - or use `start:all` fallback (it auto-picks `~/.nvm/versions/node/v22.12.0/bin/node` when available)
+- `Mismatching encryption keys` in n8n:
+  - keep the same pair of `N8N_USER_FOLDER` and `N8N_ENCRYPTION_KEY`
+  - if using a new key, use a clean folder (example: `~/.n8n-test`)
+- `webhook ... is not registered`:
+  - verify workflow is `Saved` and `Active`
+  - copy webhook **Production URL** from n8n UI
+  - update backend `.env` and restart backend
+- `curl: (7) Failed to connect to 127.0.0.1:3001`:
+  - backend is not running (start `bun run dev` in `packages/backend/api`)

@@ -25,7 +25,7 @@ describe("N8nWebhookClient", () => {
 
     (globalThis as any).fetch = fetchMock;
 
-    const client = new N8nWebhookClient("http://n8n/ingest", "http://n8n/clear", {
+    const client = new N8nWebhookClient("http://n8n/ingest", "http://n8n/list", "http://n8n/clear", {
       timeoutMs: 500,
       retries: 3
     });
@@ -41,7 +41,7 @@ describe("N8nWebhookClient", () => {
       throw new Error("offline");
     });
 
-    const client = new N8nWebhookClient("http://n8n/ingest", "http://n8n/clear", {
+    const client = new N8nWebhookClient("http://n8n/ingest", "http://n8n/list", "http://n8n/clear", {
       timeoutMs: 500,
       retries: 3
     });

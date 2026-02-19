@@ -10,6 +10,17 @@ export class ExecuteUsersPipelineUseCase {
 
   async execute() {
     const users = (await this.fetchAndDecryptUsersUseCase.execute()) as User[];
-    return this.n8nWebhookClient.ingestUsers(users);
+    const ingestResult = await this.n8nWebhookClient.ingestUsers(users);
+    const listResult = await this.n8nWebhookClient.listUsers();
+
+    if (listResult !== null && listResult !== undefined) {
+      return listResult;
+    }
+
+    if (ingestResult !== null && ingestResult !== undefined) {
+      return ingestResult;
+    }
+
+    return { users: [] };
   }
 }
