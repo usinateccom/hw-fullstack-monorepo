@@ -24,6 +24,7 @@
 cd packages/frontend/web
 bun run dev
 bun run test
+bun run test:e2e
 bun run lint
 bun run typecheck
 ```
@@ -40,6 +41,18 @@ bun run typecheck # PASS
   - execute populates table
   - clear empties table
   - loading disables buttons
+- Playwright E2E (mocked API in browser route interception):
+  - execute renders rows in `<table>`
+  - clear restores empty state
+  - flow runs without page reload
+
+## Automated E2E suite
+- File: `packages/frontend/web/tests/e2e/execute-clear.spec.ts`
+- Config: `packages/frontend/web/playwright.config.mjs`
+- Runner:
+```bash
+bun run test:e2e
+```
 
 ## E2E checklist
 - [ ] start backend and n8n
