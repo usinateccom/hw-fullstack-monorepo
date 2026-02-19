@@ -30,3 +30,23 @@ Indexes:
      0
 (1 row)
 ```
+
+## C0-03 verification snapshot (2026-02-19)
+
+Commands executed during n8n integration test:
+```bash
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "TRUNCATE TABLE users RESTART IDENTITY;"
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
+```
+
+Observed count before and after attempted webhook calls:
+```text
+ count
+-------
+     0
+(1 row)
+```
+
+Note:
+- Database connection and schema are healthy.
+- Since webhook registration is still pending adjustment in headless n8n run, no persisted rows were produced in this specific C0-03 attempt yet.
