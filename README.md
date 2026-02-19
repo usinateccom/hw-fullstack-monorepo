@@ -12,7 +12,8 @@ Fullstack pipeline in this repository:
 - AES-256-GCM decrypt + secure endpoint integration: complete
 - Frontend table + execute/clear dynamic behavior: complete
 - Local reproducibility + docs + evidence: complete
-- Cloud deploy URLs: documented workflow exists in `docs/deploy.md`, but local-first delivery is the validated baseline in this repository state
+- CI quality gate (`test/lint/typecheck`): configured in `.github/workflows/ci.yml`
+- Cloud deploy URLs: deployment playbook documented in `docs/deploy.md`; final URLs depend on manual cloud provisioning
 
 ## Tech stack
 - Backend: Bun + Fastify (DDD-ish boundaries)
@@ -81,6 +82,14 @@ bun run seed:users
 
 ## Local setup guide
 - Full setup and troubleshooting: `PROJECT-SETUP.md`
+
+## Cloud finalization checklist
+1. Deploy backend on Railway/Render/Fly and configure backend env vars.
+2. Deploy frontend on Vercel with root `packages/frontend/web`.
+3. Set `VITE_API_BASE_URL` in Vercel to backend public URL.
+4. Set backend `CORS_ORIGIN` to frontend Vercel domain.
+5. Run production smoke checks (`/health`, `/users/execute`, `/users/clear`).
+6. Update `docs/evidence/M4-deploy.md` with URLs and proof outputs.
 
 ## Evidence pack
 - M0: `docs/evidence/M0-setup.md`, `docs/evidence/M0-policy.md`
