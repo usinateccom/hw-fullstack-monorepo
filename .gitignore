@@ -1,5 +1,10 @@
 node_modules/
 bun.lockb
+# Keep Bun lockfile tracked. Ignore other package-manager lock files.
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+npm-shrinkwrap.json
 .env
 .env.*
 !.env.example
