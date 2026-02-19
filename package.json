@@ -12,6 +12,7 @@
     "dev": "lerna run dev --parallel",
     "start:all": "bash scripts/start-all.sh",
     "test": "lerna run test --stream",
+    "test:e2e": "playwright test -c packages/frontend/web/playwright.config.mjs",
     "lint": "lerna run lint --stream",
     "typecheck": "lerna run typecheck --stream",
     "rag:index": "lerna run rag:index --scope @tooling/rag",
@@ -19,6 +20,7 @@
     "gh:bootstrap": "bash scripts/gh-bootstrap.sh"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "lerna": "^8.0.0"
   }
 }
