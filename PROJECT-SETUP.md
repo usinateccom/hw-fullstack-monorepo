@@ -170,6 +170,9 @@ Seed multiple fixture users directly in PostgreSQL:
 bun run seed:users
 PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
 ```
+Note:
+- `seed:users` is optional and not part of official pipeline acceptance.
+- Official flow must be validated via backend endpoints (`/users/execute` and `/users/clear`) using n8n webhooks.
 
 ## 8) Optional Docker path
 ```bash

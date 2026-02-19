@@ -60,6 +60,10 @@ curl -i -X POST http://127.0.0.1:3001/users/clear -H 'content-type: application/
 PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
 ```
 
+Official acceptance path:
+- Use `POST /users/execute` and `POST /users/clear` to validate backend -> n8n -> postgres pipeline.
+- `seed:users` is optional and intended for local UI/debug support only.
+
 ## Useful commands
 ```bash
 # run only frontend or backend with start:all

@@ -14,6 +14,7 @@ Finalize repository hygiene and evaluator-ready docs for local-first delivery.
 - Added fixture seeding utility:
   - `scripts/seed-users.sh`
   - root script: `bun run seed:users`
+  - marked as optional debug helper (not official acceptance path)
 - Expanded setup docs with copy/paste flows, troubleshooting, and useful command index.
 - Expanded `README.md` with scope checklist, quickstart, manual e2e checks, and command catalog.
 
@@ -58,4 +59,5 @@ Observed:
 - [x] `.gitignore` + `.env.example` policy explicit
 - [x] Setup docs include full useful command catalog
 - [x] Local validation commands documented and executed
+- [x] Acceptance path clarified as backend -> n8n -> postgres (`execute/clear`)
 - [x] Repository ready for evaluator local run
