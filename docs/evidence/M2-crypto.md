@@ -64,3 +64,34 @@ curl -i http://localhost:3001/health
 curl -i -X POST http://localhost:3001/users/execute -H 'content-type: application/json' -d '{}'
 curl -i -X POST http://localhost:3001/users/clear -H 'content-type: application/json' -d '{}'
 ```
+
+## C0-02 live contract check (2026-02-19)
+
+Environment used for deterministic live HTTP validation:
+- backend on `127.0.0.1:3101`
+- temporary webhook server on `127.0.0.1:7777` emulating n8n responses
+- secure endpoint live URL kept enabled
+
+### `GET /health` success
+```http
+HTTP/1.1 200 OK
+{"status":"ok"}
+```
+
+### `POST /users/execute` success
+```http
+HTTP/1.1 200 OK
+{"users":[{"id":1,"nome":"Ana","email":"ana@example.com","phone":"+55 11 90000-0001"},{"id":2,"nome":"Beto","email":"beto@example.com","phone":"+55 11 90000-0002"}]}
+```
+
+### `POST /users/clear` success
+```http
+HTTP/1.1 200 OK
+{"cleared":true}
+```
+
+### Controlled failure envelope (`/users/clear` with invalid webhook path)
+```http
+HTTP/1.1 400 Bad Request
+{"error":{"code":"N8N_WEBHOOK_FAILED","message":"Webhook do n8n retornou erro","details":{"status":404}}}
+```
