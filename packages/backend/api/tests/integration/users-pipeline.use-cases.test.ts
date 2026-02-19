@@ -15,7 +15,8 @@ describe("users pipeline use cases", () => {
     } as any;
 
     const n8nWebhookClient = {
-      ingestUsers: async (users: unknown) => ({ users, persisted: true }),
+      ingestUsers: async () => null,
+      listUsers: async () => ({ users: decryptedUsers, persisted: true }),
       clearUsers: async () => ({ cleared: true })
     };
 
@@ -33,6 +34,7 @@ describe("users pipeline use cases", () => {
     let called = 0;
     const n8nWebhookClient = {
       ingestUsers: async () => ({}),
+      listUsers: async () => ({ users: [] }),
       clearUsers: async () => {
         called += 1;
         return { ok: true };
@@ -55,6 +57,7 @@ describe("users pipeline use cases", () => {
       ingestUsers: async () => {
         throw new AppError("N8N_WEBHOOK_FAILED", "Falha no n8n");
       },
+      listUsers: async () => ({ users: [] }),
       clearUsers: async () => ({ cleared: true })
     };
 

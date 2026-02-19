@@ -32,6 +32,13 @@ Observed:
 - `bun run typecheck` -> success for all projects
 
 ```bash
+bun run test:e2e
+```
+
+Observed:
+- `2 passed` (Playwright)
+
+```bash
 timeout 8s env INCLUDE_N8N=0 INCLUDE_BACKEND=0 VITE_PORT=5181 bun run start:all
 ```
 
@@ -53,6 +60,27 @@ PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT
 
 Observed:
 - `count = 21` in the validation environment (20 fixtures + 1 existing row)
+
+## End-to-end persistence proof (backend -> n8n -> postgres)
+
+```bash
+curl -s -X POST http://127.0.0.1:3001/users/clear -H 'content-type: application/json' -d '{}'
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) AS after_clear FROM users;"
+
+curl -s -X POST http://127.0.0.1:3001/users/execute -H 'content-type: application/json' -d '{}'
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) AS after_execute FROM users;"
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT id,nome,email,phone FROM users ORDER BY id ASC LIMIT 3;"
+
+curl -s -X POST http://127.0.0.1:3001/users/clear -H 'content-type: application/json' -d '{}'
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) AS after_final_clear FROM users;"
+```
+
+Observed:
+- `after_clear = 0`
+- `/users/execute` returned users payload
+- `after_execute = 50`
+- SQL sample rows returned valid `nome/email/phone`
+- final clear returned `after_final_clear = 0`
 
 ## Deliverable checklist
 - [x] Cleanup/hardening changes applied

@@ -25,7 +25,7 @@
       "position": [520, 300],
       "credentials": {
         "postgres": {
-          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "id": "postgres_local",
           "name": "postgres-local"
         }
       }
