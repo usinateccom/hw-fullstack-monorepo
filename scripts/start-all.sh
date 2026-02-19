@@ -37,38 +37,106 @@ log() {
   printf "%s\n" "$*"
 }
 
+is_port_listening() {
+  local port="$1"
+  if command -v lsof >/dev/null 2>&1; then
+    lsof -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1
+    return $?
+  fi
+  if command -v ss >/dev/null 2>&1; then
+    ss -ltn "sport = :$port" | awk 'NR>1{exit 0} END{exit 1}'
+    return $?
+  fi
+  if command -v nc >/dev/null 2>&1; then
+    nc -z 127.0.0.1 "$port" >/dev/null 2>&1
+    return $?
+  fi
+  return 1
+}
+
+check_port_available() {
+  local port="$1"
+  if is_port_listening "$port"; then
+    echo "Port $port is already in use. Set a different port or stop the process." >&2
+    exit 1
+  fi
+}
+
+NODE_VERSION="$(node -v 2>/dev/null || true)"
+if [[ -n "$NODE_VERSION" ]]; then
+  NODE_MAJOR="$(echo "$NODE_VERSION" | sed 's/^v//' | cut -d. -f1)"
+  NODE_MINOR="$(echo "$NODE_VERSION" | sed 's/^v//' | cut -d. -f2)"
+  if [[ "$NODE_MAJOR" -lt 20 ]]; then
+    echo "Node >= 20.19 or 22.12 is required (found $NODE_VERSION)." >&2
+    exit 1
+  fi
+  if [[ "$NODE_MAJOR" -eq 20 && "$NODE_MINOR" -lt 19 ]]; then
+    echo "Node >= 20.19 is required (found $NODE_VERSION)." >&2
+    exit 1
+  fi
+  if [[ "$NODE_MAJOR" -eq 22 && "$NODE_MINOR" -lt 12 ]]; then
+    echo "Node >= 22.12 is required (found $NODE_VERSION)." >&2
+    exit 1
+  fi
+fi
+
+INCLUDE_N8N="${INCLUDE_N8N:-1}"
+INCLUDE_BACKEND="${INCLUDE_BACKEND:-1}"
+INCLUDE_FRONTEND="${INCLUDE_FRONTEND:-1}"
+
+check_port_available "$N8N_PORT"
+check_port_available "${API_PORT:-3001}"
+check_port_available "${VITE_PORT:-5173}"
+
 log "Starting n8n..."
-(
-  cd "$ROOT_DIR"
-  exec env \
-    N8N_USER_FOLDER="$N8N_USER_FOLDER" \
-    N8N_ENCRYPTION_KEY="$N8N_ENCRYPTION_KEY" \
-    N8N_PORT="$N8N_PORT" \
-    N8N_LISTEN_ADDRESS="$N8N_LISTEN_ADDRESS" \
-    N8N_HOST=localhost \
-    N8N_PROTOCOL=http \
-    N8N_DIAGNOSTICS_ENABLED=false \
-    N8N_LOG_LEVEL=info \
-    bunx n8n start
-) &
-N8N_PID=$!
+if [[ "$INCLUDE_N8N" -eq 1 ]]; then
+  (
+    cd "$ROOT_DIR"
+    exec env \
+      N8N_USER_FOLDER="$N8N_USER_FOLDER" \
+      N8N_ENCRYPTION_KEY="$N8N_ENCRYPTION_KEY" \
+      N8N_PORT="$N8N_PORT" \
+      N8N_LISTEN_ADDRESS="$N8N_LISTEN_ADDRESS" \
+      N8N_HOST=localhost \
+      N8N_PROTOCOL=http \
+      N8N_DIAGNOSTICS_ENABLED=false \
+      N8N_LOG_LEVEL=info \
+      bunx n8n start
+  ) &
+  N8N_PID=$!
+else
+  log "Skipping n8n (INCLUDE_N8N=0)."
+fi
 
 log "Starting backend..."
-(
-  cd "$ROOT_DIR/packages/backend/api"
-  exec bun run dev
-) &
-BACKEND_PID=$!
+if [[ "$INCLUDE_BACKEND" -eq 1 ]]; then
+  (
+    cd "$ROOT_DIR/packages/backend/api"
+    exec bun run dev
+  ) &
+  BACKEND_PID=$!
+else
+  log "Skipping backend (INCLUDE_BACKEND=0)."
+fi
 
 log "Starting frontend..."
-(
-  cd "$ROOT_DIR/packages/frontend/web"
-  exec bun run dev
-) &
-FRONTEND_PID=$!
+if [[ "$INCLUDE_FRONTEND" -eq 1 ]]; then
+  (
+    cd "$ROOT_DIR/packages/frontend/web"
+    exec bun run dev
+  ) &
+  FRONTEND_PID=$!
+else
+  log "Skipping frontend (INCLUDE_FRONTEND=0)."
+fi
 
 log "All services started. Press Ctrl+C to stop."
 
-wait -n "$N8N_PID" "$BACKEND_PID" "$FRONTEND_PID"
+PIDS=()
+if [[ -n "${N8N_PID:-}" ]]; then PIDS+=("$N8N_PID"); fi
+if [[ -n "${BACKEND_PID:-}" ]]; then PIDS+=("$BACKEND_PID"); fi
+if [[ -n "${FRONTEND_PID:-}" ]]; then PIDS+=("$FRONTEND_PID"); fi
+
+wait -n "${PIDS[@]}"
 log "A service exited. Shutting down all."
 exit 1
