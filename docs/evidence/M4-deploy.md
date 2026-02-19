@@ -1,5 +1,20 @@
 # Evidence: M4-deploy.md
 
+## M4-04 - vercel + CI pipeline
+
+### CI workflow
+- File: `.github/workflows/ci.yml`
+- Trigger: push/PR on `develop` and `main`
+- Jobs:
+  - `bun install --frozen-lockfile`
+  - `bun run test`
+  - `bun run lint`
+  - `bun run typecheck`
+
+### CI proof placeholders
+- `[ ] PR checks screenshot/link`
+- `[ ] main branch workflow run screenshot/link`
+
 ## M4-01 - backend deployment
 
 ### Platform
@@ -60,3 +75,9 @@ curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/
   - `bun run lint`
   - `bun run typecheck`
 - Deploy evidence is still pending cloud publication and public URLs.
+
+## Remaining manual cloud actions
+- Deploy backend (Railway/Render/Fly) and record backend URL.
+- Deploy frontend (Vercel) and record frontend URL.
+- Configure cloud env vars and CORS.
+- Attach live curl outputs and UI screenshots.
