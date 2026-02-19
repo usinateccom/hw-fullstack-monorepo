@@ -10,6 +10,7 @@
   "scripts": {
     "bootstrap": "bun install",
     "dev": "lerna run dev --parallel",
+    "start:all": "bash scripts/start-all.sh",
     "test": "lerna run test --stream",
     "lint": "lerna run lint --stream",
     "typecheck": "lerna run typecheck --stream",

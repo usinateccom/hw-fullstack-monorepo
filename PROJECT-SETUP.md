@@ -29,6 +29,26 @@ cd hw-fullstack-monorepo
 bun install
 ```
 
+## 2.1) Start all services (n8n + backend + frontend)
+```bash
+bun run start:all
+```
+
+### Optional flags
+```bash
+# Start without n8n
+INCLUDE_N8N=0 bun run start:all
+
+# Start only backend
+INCLUDE_N8N=0 INCLUDE_FRONTEND=0 bun run start:all
+
+# Start only frontend
+INCLUDE_N8N=0 INCLUDE_BACKEND=0 bun run start:all
+
+# Custom ports
+N8N_PORT=5680 VITE_PORT=5174 API_PORT=3002 bun run start:all
+```
+
 ## 3) PostgreSQL local setup
 
 ### 3.1 Install and start

@@ -31,21 +31,30 @@ n8n --version
 
 ### Commands executed
 ```bash
-N8N_USER_FOLDER=/tmp/n8n-home bunx n8n import:credentials --input=/tmp/n8n-creds.json
-N8N_USER_FOLDER=/tmp/n8n-home bunx n8n import:workflow --input=/tmp/n8n-workflows/ingest-users.json
-N8N_USER_FOLDER=/tmp/n8n-home bunx n8n import:workflow --input=/tmp/n8n-workflows/list-users.json
-N8N_USER_FOLDER=/tmp/n8n-home bunx n8n import:workflow --input=/tmp/n8n-workflows/clear-users.json
-N8N_USER_FOLDER=/tmp/n8n-home bunx n8n start --host 127.0.0.1 --port 5678
-curl -i -X POST http://127.0.0.1:5678/webhook/ingest-users -H 'content-type: application/json' -d '{}'
+cat /tmp/n8n-home/.n8n/config
+N8N_USER_FOLDER=/tmp/n8n-home N8N_ENCRYPTION_KEY=10rqKJhukO76Y7HHBSGuhrf1Ps0MyRrl \
+  bunx n8n import:credentials --input /tmp/n8n-postgres-credentials.json
+N8N_USER_FOLDER=/tmp/n8n-home N8N_ENCRYPTION_KEY=10rqKJhukO76Y7HHBSGuhrf1Ps0MyRrl \
+  bunx n8n import:workflow --input packages/tooling/workflows/exported/ingest-users.json
+N8N_USER_FOLDER=/tmp/n8n-home N8N_ENCRYPTION_KEY=10rqKJhukO76Y7HHBSGuhrf1Ps0MyRrl \
+  bunx n8n import:workflow --input packages/tooling/workflows/exported/list-users.json
+N8N_USER_FOLDER=/tmp/n8n-home N8N_ENCRYPTION_KEY=10rqKJhukO76Y7HHBSGuhrf1Ps0MyRrl \
+  bunx n8n import:workflow --input packages/tooling/workflows/exported/clear-users.json
+N8N_USER_FOLDER=/tmp/n8n-home N8N_ENCRYPTION_KEY=10rqKJhukO76Y7HHBSGuhrf1Ps0MyRrl \
+  bunx n8n publish:workflow --id sYR9JTbdNug0EIE6
+timeout 8s N8N_USER_FOLDER=/tmp/n8n-home N8N_ENCRYPTION_KEY=10rqKJhukO76Y7HHBSGuhrf1Ps0MyRrl \
+  N8N_PORT=5679 N8N_LISTEN_ADDRESS=127.0.0.1 bunx n8n start
 ```
 
 ### Observed result
-- n8n starts and marks workflows as activated in logs.
-- Production webhook path returns `404` in headless run:
+- Credentials and workflows imported successfully via CLI.
+- Publishing workflows works but requires restart to apply.
+- n8n server fails to bind the local port in this sandbox:
 ```text
-The requested webhook "POST ingest-users" is not registered.
+n8n webserver failed, exiting listen EPERM: operation not permitted 127.0.0.1:5679
 ```
 
 ### Current status
-- n8n runtime and credential import are validated.
-- Webhook registration behavior in this headless setup still needs final adjustment before marking C0-03 as complete.
+- Import/publish steps are reproducible.
+- Full live webhook execution is blocked here due to sandbox port restrictions.
+- Run the same commands on a local machine (outside sandbox) to complete the webhook proof.
