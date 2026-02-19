@@ -101,12 +101,18 @@ cd packages/backend/api
 cp .env.example .env
 ```
 
-Set in `.env`:
-- `SECURE_ENDPOINT_URL`
-- `N8N_WEBHOOK_INGEST_URL`
-- `N8N_WEBHOOK_LIST_URL`
-- `N8N_WEBHOOK_CLEAR_URL`
-- `CORS_ORIGIN`
+Set in `.env` (complete example):
+```bash
+API_PORT=3001
+API_HOST=0.0.0.0
+CORS_ORIGIN=http://localhost:5173
+SECURE_ENDPOINT_URL=https://n8n-apps.nlabshealth.com/webhook/data-5dYbrVSlMVJxfmco
+N8N_WEBHOOK_INGEST_URL=http://localhost:5678/webhook/ingest-users
+N8N_WEBHOOK_LIST_URL=http://localhost:5678/webhook/list-users
+N8N_WEBHOOK_CLEAR_URL=http://localhost:5678/webhook/clear-users
+HTTP_TIMEOUT_MS=10000
+HTTP_RETRIES=3
+```
 
 ### 5.2 Start backend
 ```bash
@@ -122,7 +128,9 @@ cp .env.example .env
 ```
 
 Set in `.env`:
-- `VITE_API_BASE_URL=http://localhost:3001`
+```bash
+VITE_API_BASE_URL=http://localhost:3001
+```
 
 ### 6.2 Start frontend
 ```bash
@@ -148,3 +156,17 @@ chmod +x scripts/local-e2e-smoke.sh
 cd infra
 docker compose up -d
 ```
+
+## 9) Where to add n8n credential
+Create this credential in n8n UI:
+1. Open `http://localhost:5678`.
+2. Go to `Credentials` and create a `Postgres` credential.
+3. Use:
+   - `Host=localhost`
+   - `Port=5432`
+   - `Database=hw_fullstack_db`
+   - `User=postgres`
+   - `Password=Tst1320`
+   - `SSL=off`
+4. Save as `postgres-local`.
+5. Open each imported workflow and select this credential in all Postgres nodes.
