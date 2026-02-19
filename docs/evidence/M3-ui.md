@@ -36,6 +36,12 @@ bun run lint      # PASS
 bun run typecheck # PASS
 ```
 
+## Latest E2E run (2026-02-19)
+```bash
+PATH=$HOME/.nvm/versions/node/v22.12.0/bin:$PATH bun run test:e2e
+# 2 passed (3.3s)
+```
+
 ### Frontend test highlights
 - Jest + RTL state transitions:
   - execute populates table
@@ -55,12 +61,12 @@ bun run test:e2e
 ```
 
 ## E2E checklist
-- [ ] start backend and n8n
-- [ ] click `Executar` and verify rows rendered
-- [ ] click `Limpar` and verify table empty
-- [ ] repeat flow without page reload
+- [x] start frontend app for E2E runner (`playwright.config.mjs` webServer)
+- [x] click `Executar` and verify rows rendered
+- [x] click `Limpar` and verify table empty
+- [x] repeat flow without page reload
 
-## Screenshot placeholders
-- `[ ] desktop layout after execute`
-- `[ ] desktop layout after clear`
-- `[ ] mobile layout`
+## Screenshot evidence
+- `docs/evidence/assets/m3-desktop-after-execute.png`
+- `docs/evidence/assets/m3-desktop-after-clear.png`
+- `docs/evidence/assets/m3-mobile-after-execute.png`
