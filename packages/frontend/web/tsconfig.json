@@ -3,7 +3,10 @@
   "compilerOptions": {
     "allowJs": true,
     "checkJs": false,
+    "strict": false,
+    "noImplicitAny": false,
     "noEmit": true,
+    "jsx": "react-jsx",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "target": "ES2022",
