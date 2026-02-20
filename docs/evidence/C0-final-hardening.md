@@ -21,6 +21,15 @@ Finalize repository hygiene and evaluator-ready docs for local-first delivery.
   - `start:all` documented as daily runtime command after one-time bootstrap
   - `docs/workflows.md` now explains production webhook URL mapping and dynamic path cases
   - `docs/deploy.md` now includes click-by-click go-live sequence and rollback checklist
+- Implemented issue #60 (`start:all` readiness hardening):
+  - deterministic startup order: n8n -> backend -> frontend
+  - HTTP readiness gates for n8n and backend (`/health`)
+  - configurable timeout and poll interval:
+    - `STARTUP_MAX_WAIT_SEC`
+    - `STARTUP_POLL_INTERVAL_SEC`
+    - `N8N_READY_URL`
+    - `BACKEND_READY_URL`
+  - fail-fast on readiness timeout or early child process exit with actionable logs
 
 ## Validation commands and outputs (2026-02-19)
 
@@ -34,6 +43,26 @@ Observed:
 - `bun run test` -> success for all projects
 - `bun run lint` -> success for all projects
 - `bun run typecheck` -> success for all projects
+
+## Reliability matrix (issue #60)
+
+| Scenario | Command | Expected | Observed |
+|---|---|---|---|
+| Syntax validation | `bash -n scripts/start-all.sh` | shell script is valid | pass |
+| Backend readiness waits and fails fast when backend exits early | `INCLUDE_N8N=0 INCLUDE_FRONTEND=0 bun run start:all` | clear readiness log + non-zero exit | pass (`[readiness] backend process exited before becoming ready`) |
+| Forced bad backend readiness URL | `INCLUDE_N8N=0 INCLUDE_FRONTEND=0 BACKEND_READY_URL=http://127.0.0.1:9/health STARTUP_MAX_WAIT_SEC=4 bun run start:all` | readiness gate fails quickly with explicit reason | pass (explicit readiness failure) |
+
+Reference startup logs (expected shape on healthy run):
+```text
+[stage 1/3] Starting n8n...
+[readiness] waiting for n8n: http://127.0.0.1:5678 (timeout 90s)
+[readiness] n8n ready (HTTP 200) after 4s.
+[stage 2/3] Starting backend...
+[readiness] waiting for backend: http://127.0.0.1:3001/health (timeout 90s)
+[readiness] backend ready (HTTP 200) after 1s.
+[stage 3/3] Starting frontend...
+All enabled services started in dependency order. Press Ctrl+C to stop.
+```
 
 ```bash
 bun run test:e2e
