@@ -10,10 +10,24 @@
   - `bun run test`
   - `bun run lint`
   - `bun run typecheck`
+  - `bun run --cwd packages/frontend/web build`
+
+### Vercel deploy workflow
+- File: `.github/workflows/vercel-deploy.yml`
+- Preview deploy: PRs targeting `develop`/`main` (when Vercel secrets exist)
+- Production deploy: push to `main` (when Vercel secrets exist)
+- Required GitHub secrets:
+  - `VERCEL_TOKEN`
+  - `VERCEL_ORG_ID`
+  - `VERCEL_PROJECT_ID`
 
 ### CI proof placeholders
 - `[ ] PR checks screenshot/link`
 - `[ ] main branch workflow run screenshot/link`
+- `[ ] vercel preview workflow run link`
+- `[ ] vercel production workflow run link`
+- `[ ] vercel preview URL`
+- `[ ] vercel production URL`
 
 ## M4-01 - backend deployment
 
