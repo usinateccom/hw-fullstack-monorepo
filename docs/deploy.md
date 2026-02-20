@@ -26,6 +26,15 @@ cd packages/backend/api
 bun src/server.ts
 ```
 
+### Step-by-step (click-by-click)
+1. Create backend service in Railway/Render/Fly from this repository.
+2. Set working directory to `packages/backend/api` (if platform requires monorepo root override).
+3. Set install command to `bun install`.
+4. Set start command to `bun src/server.ts`.
+5. Configure backend env vars (list below).
+6. Deploy and wait for healthy state.
+7. Validate `GET /health` on public URL.
+
 ### Environment variables (backend)
 - `API_PORT`
 - `API_HOST`
@@ -43,6 +52,16 @@ curl -i https://<backend-url>/health
 curl -i -X POST https://<backend-url>/users/execute -H 'content-type: application/json' -d '{}'
 curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/json' -d '{}'
 ```
+
+### n8n production dependency
+Before `/users/execute` and `/users/clear` can pass, production n8n must be ready:
+1. Create/import workflows (ingest/list/clear) in production n8n.
+2. Configure production Postgres credentials in workflow nodes.
+3. Activate workflows.
+4. Copy each webhook **Production URL** into backend env:
+   - `N8N_WEBHOOK_INGEST_URL`
+   - `N8N_WEBHOOK_LIST_URL`
+   - `N8N_WEBHOOK_CLEAR_URL`
 
 ## Frontend (React + Vite)
 
@@ -76,3 +95,21 @@ bun run build
 - Open frontend URL.
 - Click `Executar` and verify table fills.
 - Click `Limpar` and verify table clears without reload.
+
+## Ordered production go-live sequence
+1. Provision production Postgres.
+2. Deploy/configure production n8n (with Postgres credentials).
+3. Import/activate workflows and capture production webhook URLs.
+4. Deploy backend with production env vars (including webhook URLs).
+5. Smoke backend routes.
+6. Deploy frontend and point `VITE_API_BASE_URL` to backend.
+7. Validate full UI flow (`Executar` and `Limpar`).
+8. Register evidence in `docs/evidence/M4-deploy.md`.
+
+## Rollback
+If production smoke fails after a deploy:
+1. Frontend: rollback to previous successful deployment on Vercel/Netlify.
+2. Backend: rollback to previous successful deployment on Railway/Render/Fly.
+3. Reapply previous backend env set (especially `N8N_WEBHOOK_*`, `CORS_ORIGIN`, `VITE_API_BASE_URL` alignment).
+4. Re-run smoke checks on rolled-back versions.
+5. Open incident note in evidence doc with timestamp, failed check, rollback target and result.

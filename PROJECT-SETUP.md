@@ -35,6 +35,7 @@ bun run start:all
 ```
 Note:
 - If your shell is on Node `22.11.x`, `start:all` will auto-use Node `22.12.0` from nvm when available.
+- `start:all` is the daily runtime command. One-time n8n workflow bootstrap is still required (section 4).
 
 ### Optional flags
 ```bash
@@ -107,6 +108,25 @@ Important:
 - In n8n UI, open each workflow, ensure Postgres nodes use `postgres-local`, save, and activate.
 - Copy the **Production URL** from each Webhook node (ingest/list/clear).
 
+### 4.4 Resolve exact production webhook URLs (required)
+Do not guess webhook paths. Use one of the methods below:
+
+UI method:
+1. Open workflow `ingest-users` -> Webhook node.
+2. Toggle to **Production URL**.
+3. Copy full URL and place in backend `.env` (`N8N_WEBHOOK_INGEST_URL`).
+4. Repeat for `list-users` and `clear-users`.
+
+CLI verification method (same n8n folder/key):
+```bash
+bun -e 'import { Database } from "bun:sqlite";
+const db=new Database(process.env.HOME+"/.n8n-test/.n8n/database.sqlite",{readonly:true});
+const rows=db.query("select workflowId, webhookPath, method from webhook_entity order by workflowId").all();
+console.log(rows);'
+```
+Then build URL as:
+`http://127.0.0.1:5678/webhook/<webhookPath>`
+
 ## 5) Backend config and run
 
 ### 5.1 Environment
@@ -127,6 +147,9 @@ N8N_WEBHOOK_CLEAR_URL=<copy-from-n8n-production-webhook>
 HTTP_TIMEOUT_MS=10000
 HTTP_RETRIES=3
 ```
+
+Sanity check:
+- If these values still contain placeholders or wrong paths, backend returns `N8N_WEBHOOK_FAILED` (404).
 
 ### 5.2 Start backend
 ```bash
@@ -204,6 +227,21 @@ If both counts remain `0`, verify:
 1. backend is running (`curl http://127.0.0.1:3001/health`)
 2. webhook URLs in backend `.env` are copied from n8n production URL
 3. workflows are saved + activated in n8n after restart
+
+## 10.1) `start:all` only flow (daily run)
+After one-time setup is finished (sections 3, 4, 5, 6), daily run is:
+```bash
+# terminal A
+bun run start:all
+
+# terminal B
+curl -s -X POST http://127.0.0.1:3001/users/execute -H 'content-type: application/json' -d '{}'
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
+
+curl -s -X POST http://127.0.0.1:3001/users/clear -H 'content-type: application/json' -d '{}'
+PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
+```
+If backend returns 404 from n8n, copy the Production URLs again and restart `start:all`.
 
 ## 11) Useful command reference
 ```bash

@@ -17,6 +17,10 @@ Finalize repository hygiene and evaluator-ready docs for local-first delivery.
   - docs now enforce official acceptance path only (`/users/execute` and `/users/clear`)
 - Expanded setup docs with copy/paste flows, troubleshooting, and useful command index.
 - Expanded `README.md` with scope checklist, quickstart, manual e2e checks, and command catalog.
+- Hardened docs for operational clarity:
+  - `start:all` documented as daily runtime command after one-time bootstrap
+  - `docs/workflows.md` now explains production webhook URL mapping and dynamic path cases
+  - `docs/deploy.md` now includes click-by-click go-live sequence and rollback checklist
 
 ## Validation commands and outputs (2026-02-19)
 
