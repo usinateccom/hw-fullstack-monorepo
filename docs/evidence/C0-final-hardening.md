@@ -11,10 +11,10 @@ Finalize repository hygiene and evaluator-ready docs for local-first delivery.
 - Hardened `start:all` behavior:
   - auto-fallback to Node `22.12.0` from nvm when shell is on `22.11.x`
   - checks only ports for enabled services (`INCLUDE_*` aware)
-- Added fixture seeding utility:
-  - `scripts/seed-users.sh`
-  - root script: `bun run seed:users`
-  - marked as optional debug helper (not official acceptance path)
+- Removed seed-based local test path:
+  - deleted `scripts/seed-users.sh`
+  - removed root command `bun run seed:users`
+  - docs now enforce official acceptance path only (`/users/execute` and `/users/clear`)
 - Expanded setup docs with copy/paste flows, troubleshooting, and useful command index.
 - Expanded `README.md` with scope checklist, quickstart, manual e2e checks, and command catalog.
 
@@ -47,19 +47,11 @@ Observed:
 - no immediate Node version gate failure in this path
 
 ```bash
-bun run seed:users
-```
-
-Observed:
-- `INSERT 0 20`
-- `Inserted/updated fixture users into hw_fullstack_db.users`
-
-```bash
 PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
 ```
 
 Observed:
-- `count = 21` in the validation environment (20 fixtures + 1 existing row)
+- count validation is performed only through execute/clear flow
 
 ## End-to-end persistence proof (backend -> n8n -> postgres)
 

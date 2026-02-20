@@ -164,14 +164,7 @@ Local smoke (backend + n8n + postgres):
 chmod +x scripts/local-e2e-smoke.sh
 ./scripts/local-e2e-smoke.sh
 ```
-
-Seed multiple fixture users directly in PostgreSQL:
-```bash
-bun run seed:users
-PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
-```
 Note:
-- `seed:users` is optional and not part of official pipeline acceptance.
 - Official flow must be validated via backend endpoints (`/users/execute` and `/users/clear`) using n8n webhooks.
 
 ## 8) Optional Docker path
@@ -220,9 +213,6 @@ bun run start:all
 # Partial start
 INCLUDE_N8N=0 INCLUDE_FRONTEND=0 bun run start:all
 INCLUDE_N8N=0 INCLUDE_BACKEND=0 bun run start:all
-
-# Populate many fixture users
-bun run seed:users
 
 # DB quick checks
 PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
