@@ -1,3 +1,0 @@
-# Kickoff
-
-(TODO)

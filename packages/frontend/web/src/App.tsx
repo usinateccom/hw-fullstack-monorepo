@@ -7,12 +7,13 @@ import {
   canExecute,
   initialUiState,
   startLoading
-} from "./state.js";
+} from "./state";
 
 function parseUsers(payload) {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.users)) return payload.users;
-  if (Array.isArray(payload?.data?.users)) return payload.data.users;
+  const root = payload;
+  if (Array.isArray(root)) return root;
+  if (Array.isArray(root?.users)) return root.users;
+  if (Array.isArray(root?.data?.users)) return root.data.users;
   return [];
 }
 

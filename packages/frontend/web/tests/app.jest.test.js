@@ -1,7 +1,7 @@
 import { jest } from "@jest/globals";
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { App } from "../src/App.js";
+import { App } from "../src/App.tsx";
 
 describe("App component", () => {
   const apiBaseUrl = "http://localhost:3001";
