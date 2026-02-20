@@ -11,7 +11,6 @@
     "bootstrap": "bun install",
     "dev": "lerna run dev --parallel",
     "start:all": "bash scripts/start-all.sh",
-    "seed:users": "bash scripts/seed-users.sh",
     "test": "lerna run test --stream",
     "test:e2e": "playwright test -c packages/frontend/web/playwright.config.mjs",
     "lint": "lerna run lint --stream",

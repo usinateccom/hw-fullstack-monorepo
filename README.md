@@ -37,11 +37,12 @@ PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -f infra/s
 bun run start:all
 ```
 
+Important:
+- `start:all` starts services, but does not create n8n workflows or Postgres credentials automatically.
+- Complete one-time bootstrap in `PROJECT-SETUP.md` section `4) n8n local setup` before first `execute/clear`.
+
 In another terminal:
 ```bash
-# populate fixture users
-bun run seed:users
-
 # quality gate
 bun run test
 bun run lint
@@ -63,7 +64,6 @@ PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT
 
 Official acceptance path:
 - Use `POST /users/execute` and `POST /users/clear` to validate backend -> n8n -> postgres pipeline.
-- `seed:users` is optional and intended for local UI/debug support only.
 
 ## Useful commands
 ```bash
@@ -75,9 +75,8 @@ INCLUDE_N8N=0 INCLUDE_FRONTEND=0 bun run start:all
 N8N_USER_FOLDER=~/.n8n-test N8N_ENCRYPTION_KEY=<key> bunx n8n list:workflow
 N8N_USER_FOLDER=~/.n8n-test N8N_ENCRYPTION_KEY=<key> bunx n8n publish:workflow --id <workflow-id>
 
-# clear and reseed database
+# clear database
 PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "TRUNCATE TABLE users RESTART IDENTITY;"
-bun run seed:users
 ```
 
 ## Local setup guide
@@ -85,11 +84,14 @@ bun run seed:users
 
 ## Cloud finalization checklist
 1. Deploy backend on Railway/Render/Fly and configure backend env vars.
-2. Deploy frontend on Vercel with root `packages/frontend/web`.
-3. Set `VITE_API_BASE_URL` in Vercel to backend public URL.
-4. Set backend `CORS_ORIGIN` to frontend Vercel domain.
-5. Run production smoke checks (`/health`, `/users/execute`, `/users/clear`).
-6. Update `docs/evidence/M4-deploy.md` with URLs and proof outputs.
+2. Provision production Postgres and set n8n production credentials.
+3. Import/publish workflows in production n8n and copy production webhook URLs.
+4. Deploy frontend on Vercel with root `packages/frontend/web`.
+5. Set `VITE_API_BASE_URL` in Vercel to backend public URL.
+6. Set backend `CORS_ORIGIN` to frontend Vercel domain.
+7. Run production smoke checks (`/health`, `/users/execute`, `/users/clear`).
+8. If smoke fails, follow rollback sequence in `docs/deploy.md`.
+9. Update `docs/evidence/M4-deploy.md` with URLs and proof outputs.
 
 ## Evidence pack
 - M0: `docs/evidence/M0-setup.md`, `docs/evidence/M0-policy.md`
