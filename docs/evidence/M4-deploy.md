@@ -95,3 +95,10 @@ curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/
 - Deploy frontend (Vercel) and record frontend URL.
 - Configure cloud env vars and CORS.
 - Attach live curl outputs and UI screenshots.
+
+## Production fetch diagnostics checklist
+- `[ ] Vercel env: VITE_API_BASE_URL points to backend public URL (not localhost)`
+- `[ ] Backend env: CORS_ORIGIN includes frontend Vercel domain(s)`
+- `[ ] Curl https://<backend-url>/health returns 200`
+- `[ ] Curl POST /users/execute returns JSON payload`
+- `[ ] Browser Network tab confirms request target matches configured backend URL`

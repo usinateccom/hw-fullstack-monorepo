@@ -67,6 +67,11 @@ bun src/server.ts
 - `HTTP_TIMEOUT_MS`
 - `HTTP_RETRIES`
 
+`CORS_ORIGIN` supports multiple origins as comma-separated values:
+```bash
+CORS_ORIGIN=https://your-prod-frontend.vercel.app,https://your-preview-frontend.vercel.app
+```
+
 ### Post-deploy smoke test
 ```bash
 curl -i https://<backend-url>/health
@@ -149,3 +154,17 @@ If production smoke fails after a deploy:
 3. Reapply previous backend env set (especially `N8N_WEBHOOK_*`, `CORS_ORIGIN`, `VITE_API_BASE_URL` alignment).
 4. Re-run smoke checks on rolled-back versions.
 5. Open incident note in evidence doc with timestamp, failed check, rollback target and result.
+
+## Production troubleshooting: `Failed to fetch`
+If frontend shows `Failed to fetch` after deploy:
+1. In Vercel project, verify `VITE_API_BASE_URL` is set to backend public URL (not localhost).
+2. In backend platform, verify `CORS_ORIGIN` includes the frontend Vercel domain.
+3. Run from terminal:
+```bash
+curl -i https://<backend-url>/health
+curl -i -X POST https://<backend-url>/users/execute -H 'content-type: application/json' -d '{}'
+```
+4. If backend curl works but browser still fails, inspect browser Network tab:
+   - status `0` / CORS error: fix `CORS_ORIGIN`
+   - DNS/TLS failure: verify backend URL in `VITE_API_BASE_URL`
+   - `4xx/5xx` with JSON error: backend is reachable, fix backend env/workflow
