@@ -36,6 +36,11 @@ bun run start:all
 Note:
 - If your shell is on Node `22.11.x`, `start:all` will auto-use Node `22.12.0` from nvm when available.
 - `start:all` is the daily runtime command. One-time n8n workflow bootstrap is still required (section 4).
+- Startup is dependency-aware and deterministic:
+  1. n8n starts and must pass HTTP readiness
+  2. backend starts and must pass `/health`
+  3. frontend starts only after backend readiness
+- If n8n/backend readiness timeout is reached, script exits with explicit reason and kills child processes.
 
 ### Optional flags
 ```bash
@@ -50,6 +55,10 @@ INCLUDE_N8N=0 INCLUDE_BACKEND=0 bun run start:all
 
 # Custom ports
 N8N_PORT=5680 VITE_PORT=5174 API_PORT=3002 bun run start:all
+
+# Startup readiness tuning
+STARTUP_MAX_WAIT_SEC=120 STARTUP_POLL_INTERVAL_SEC=2 bun run start:all
+N8N_READY_URL=http://127.0.0.1:5678 BACKEND_READY_URL=http://127.0.0.1:3001/health bun run start:all
 ```
 
 ## 3) PostgreSQL local setup
@@ -281,3 +290,8 @@ bun run typecheck
   - update backend `.env` and restart backend
 - `curl: (7) Failed to connect to 127.0.0.1:3001`:
   - backend is not running (start `bun run dev` in `packages/backend/api`)
+- `start:all` timeout on readiness:
+  - check stage logs (`[readiness] waiting for ...`)
+  - confirm ports are free (`lsof -i :5678`, `lsof -i :3001`)
+  - increase timeout (`STARTUP_MAX_WAIT_SEC=180`)
+  - validate URLs used by readiness (`N8N_READY_URL`, `BACKEND_READY_URL`)
