@@ -18,6 +18,13 @@ function parseUsers(payload) {
 }
 
 function toUiError(error) {
+  const rawMessage =
+    error && typeof error === "object" && "message" in error ? String(error.message) : String(error ?? "");
+
+  if (rawMessage.toLowerCase().includes("failed to fetch")) {
+    return "Falha de rede ao chamar backend. Verifique VITE_API_BASE_URL no deploy e CORS_ORIGIN no backend.";
+  }
+
   if (error && typeof error === "object" && "message" in error) {
     return String(error.message);
   }
@@ -46,6 +53,9 @@ async function callApi(apiBaseUrl, path, init) {
 export function App({ apiBaseUrl }) {
   const [state, setState] = useState(initialUiState());
   const hasUsers = useMemo(() => state.users.length > 0, [state.users.length]);
+  const runningOutsideLocalhost =
+    typeof window !== "undefined" && !["localhost", "127.0.0.1"].includes(window.location.hostname);
+  const apiLooksLocalOnly = apiBaseUrl.includes("localhost") || apiBaseUrl.includes("127.0.0.1");
 
   async function handleExecute() {
     if (!canExecute(state)) return;
@@ -92,6 +102,13 @@ export function App({ apiBaseUrl }) {
         { className: "subtitle" },
         "Clique em Executar para chamar o backend e preencher a tabela sem reload."
       ),
+      runningOutsideLocalhost && apiLooksLocalOnly
+        ? React.createElement(
+            "p",
+            { className: "status error" },
+            "Configuracao de deploy incompleta: defina VITE_API_BASE_URL com a URL publica do backend."
+          )
+        : null,
       React.createElement(
         "div",
         { className: "actions" },
