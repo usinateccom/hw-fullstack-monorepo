@@ -13,6 +13,7 @@ Fullstack pipeline in this repository:
 - Frontend table + execute/clear dynamic behavior: complete
 - Local reproducibility + docs + evidence: complete
 - CI quality gate (`test/lint/typecheck`): configured in `.github/workflows/ci.yml`
+- CI now also validates frontend production build (`bun run --cwd packages/frontend/web build`)
 - Cloud deploy URLs: deployment playbook documented in `docs/deploy.md`; final URLs depend on manual cloud provisioning
 
 ## Tech stack
@@ -92,6 +93,17 @@ PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "TRUNCA
 7. Run production smoke checks (`/health`, `/users/execute`, `/users/clear`).
 8. If smoke fails, follow rollback sequence in `docs/deploy.md`.
 9. Update `docs/evidence/M4-deploy.md` with URLs and proof outputs.
+
+## GitHub Actions + Vercel
+1. Configure repository secrets:
+   - `VERCEL_TOKEN`
+   - `VERCEL_ORG_ID`
+   - `VERCEL_PROJECT_ID`
+2. Configure frontend env in Vercel:
+   - `VITE_API_BASE_URL=https://<backend-url>`
+3. Workflows used:
+   - CI quality gate: `.github/workflows/ci.yml`
+   - Vercel preview/prod deploy: `.github/workflows/vercel-deploy.yml`
 
 ## Evidence pack
 - M0: `docs/evidence/M0-setup.md`, `docs/evidence/M0-policy.md`

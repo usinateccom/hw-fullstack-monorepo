@@ -12,6 +12,27 @@ Runs on push/PR to `develop` and `main`:
 - `bun run test`
 - `bun run lint`
 - `bun run typecheck`
+- `bun run --cwd packages/frontend/web build`
+
+## Vercel deploy automation (GitHub Actions)
+
+Workflow file:
+- `.github/workflows/vercel-deploy.yml`
+
+Behavior:
+- PR to `develop/main`: preview deploy job.
+- Push to `main`: production deploy job.
+- `workflow_dispatch`: manual rerun support.
+
+Required GitHub repository secrets:
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+- `VITE_API_BASE_URL` (recommended for production build context)
+
+Important:
+- Jobs are gated by secrets presence; if missing, deploy jobs are skipped.
+- No Vercel credentials are stored in repository files.
 
 ## Backend (Fastify + Bun)
 
@@ -88,6 +109,18 @@ bun run build
 - Output directory: `dist`
 - Install command: `bun install`
 
+### Vercel setup (click-by-click)
+1. In Vercel, import the GitHub repository.
+2. Set **Root Directory** to `packages/frontend/web`.
+3. Set **Framework Preset** to `Vite`.
+4. Set **Install Command** to `bun install`.
+5. Set **Build Command** to `bun run build`.
+6. Set **Output Directory** to `dist`.
+7. Add environment variable `VITE_API_BASE_URL=https://<backend-url>` for Preview and Production.
+8. Deploy once manually from Vercel UI to validate project linkage.
+9. Copy `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` into GitHub secrets.
+10. Add `VERCEL_TOKEN` in GitHub secrets.
+
 ### Vercel environment variables
 - `VITE_API_BASE_URL=https://<backend-url>`
 
@@ -105,6 +138,9 @@ bun run build
 6. Deploy frontend and point `VITE_API_BASE_URL` to backend.
 7. Validate full UI flow (`Executar` and `Limpar`).
 8. Register evidence in `docs/evidence/M4-deploy.md`.
+9. Confirm latest `main` run completed in:
+   - `.github/workflows/ci.yml`
+   - `.github/workflows/vercel-deploy.yml`
 
 ## Rollback
 If production smoke fails after a deploy:
