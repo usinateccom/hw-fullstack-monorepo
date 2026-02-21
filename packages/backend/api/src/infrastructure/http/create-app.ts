@@ -4,6 +4,7 @@ import { Aes256GcmDecryptor } from "../../application/services/aes256gcm-decrypt
 import { ClearUsersUseCase } from "../../application/use-cases/clear-users";
 import { ExecuteUsersPipelineUseCase } from "../../application/use-cases/execute-users-pipeline";
 import { FetchAndDecryptUsersUseCase } from "../../application/use-cases/fetch-and-decrypt-users";
+import { SeedUsersUseCase } from "../../application/use-cases/seed-users";
 import { SecureEndpointClient } from "./secure-endpoint-client";
 import { N8nWebhookClient } from "./n8n-webhook-client";
 import type { AppConfig } from "../../shared/config";
@@ -51,7 +52,8 @@ export function createApp(config: AppConfig, deps: CreateAppDeps = {}): FastifyI
   );
   const usersController = new UsersController(
     new ExecuteUsersPipelineUseCase(fetchAndDecryptUsersUseCase, n8nWebhookClient),
-    new ClearUsersUseCase(n8nWebhookClient)
+    new ClearUsersUseCase(n8nWebhookClient),
+    new SeedUsersUseCase(n8nWebhookClient)
   );
 
   app.register(registerHealthRoutes);

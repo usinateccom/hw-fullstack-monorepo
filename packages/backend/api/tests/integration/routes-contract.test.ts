@@ -27,15 +27,18 @@ describe("route contracts", () => {
 
     const controller = {
       execute: async () => ({ users: [{ id: 1 }] }),
-      clear: async () => ({ cleared: true })
+      clear: async () => ({ cleared: true }),
+      seed: async () => ({ users: [{ id: 2 }] })
     };
 
     await registerUsersRoutes(app as any, controller as any);
 
     const executeOutput = await routes["POST /users/execute"]();
     const clearOutput = await routes["POST /users/clear"]();
+    const seedOutput = await routes["POST /users/seed"]({ body: { count: 1 } });
 
     expect(executeOutput).toEqual({ users: [{ id: 1 }] });
     expect(clearOutput).toEqual({ cleared: true });
+    expect(seedOutput).toEqual({ users: [{ id: 2 }] });
   });
 });

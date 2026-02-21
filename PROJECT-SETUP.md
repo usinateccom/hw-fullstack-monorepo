@@ -270,6 +270,7 @@ PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "TRUNCA
 curl -i http://127.0.0.1:3001/health
 curl -i -X POST http://127.0.0.1:3001/users/execute -H 'content-type: application/json' -d '{}'
 curl -i -X POST http://127.0.0.1:3001/users/clear -H 'content-type: application/json' -d '{}'
+curl -i -X POST http://127.0.0.1:3001/users/seed -H 'content-type: application/json' -d '{"count":25}'
 
 # Quality gate
 bun run test
@@ -288,6 +289,8 @@ bun run typecheck
   - verify workflow is `Saved` and `Active`
   - copy webhook **Production URL** from n8n UI
   - update backend `.env` and restart backend
+- `/users/seed` returns `INVALID_SEED_COUNT`:
+  - payload must include integer `count` between `1` and `200`
 - `curl: (7) Failed to connect to 127.0.0.1:3001`:
   - backend is not running (start `bun run dev` in `packages/backend/api`)
 - `start:all` timeout on readiness:

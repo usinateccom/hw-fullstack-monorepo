@@ -34,6 +34,26 @@ Triggers n8n clear webhook and returns confirmation.
 { "cleared": true }
 ```
 
+## POST /users/seed
+Generates a fictitious dataset in backend and persists through n8n ingest + list flow.
+
+### Request body
+```json
+{ "count": 20 }
+```
+
+Rules:
+- `count` must be an integer between `1` and `200`.
+
+### Response 200 (example)
+```json
+{
+  "users": [
+    { "id": 1, "nome": "Ana Silva", "email": "ana.silva.12345678@seed.local", "phone": "+55 11 910000001" }
+  ]
+}
+```
+
 ## Error envelope
 All handled errors return:
 ```json
