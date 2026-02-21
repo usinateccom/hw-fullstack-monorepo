@@ -109,6 +109,7 @@ curl -i -X POST http://127.0.0.1:3001/users/seed -H 'content-type: application/j
 3. Workflows used:
    - CI quality gate: `.github/workflows/ci.yml`
    - Vercel preview/prod deploy: `.github/workflows/vercel-deploy.yml`
+   - Unified production CD (backend+n8n+frontend): `.github/workflows/release-deploy.yml`
 
 ## Evidence pack
 - M0: `docs/evidence/M0-setup.md`, `docs/evidence/M0-policy.md`

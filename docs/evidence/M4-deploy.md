@@ -21,6 +21,33 @@
   - `VERCEL_ORG_ID`
   - `VERCEL_PROJECT_ID`
 
+## C0-11 - unified CD for 3 deploys
+
+### Workflow
+- File: `.github/workflows/release-deploy.yml`
+- Trigger:
+  - `push` on `main`
+  - `workflow_dispatch`
+
+### Unified deployment order
+1. Railway backend deploy hook trigger
+2. Railway n8n deploy hook trigger
+3. Readiness wait (`backend /health`, `n8n /`)
+4. Vercel production deploy
+5. Smoke checks (`/health`, frontend root, `/users/execute`, `/users/clear`)
+
+### Required GitHub secrets
+- `RAILWAY_BACKEND_DEPLOY_HOOK_URL`
+- `RAILWAY_N8N_DEPLOY_HOOK_URL`
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+### Required GitHub variables
+- `PROD_BACKEND_URL`
+- `PROD_N8N_URL`
+- `PROD_FRONTEND_URL`
+
 ### CI proof placeholders
 - `[ ] PR checks screenshot/link`
 - `[ ] main branch workflow run screenshot/link`
