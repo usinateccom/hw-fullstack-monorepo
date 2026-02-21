@@ -30,6 +30,20 @@ Finalize repository hygiene and evaluator-ready docs for local-first delivery.
     - `N8N_READY_URL`
     - `BACKEND_READY_URL`
   - fail-fast on readiness timeout or early child process exit with actionable logs
+- Added production-friendly dataset seed flow:
+  - backend endpoint `POST /users/seed` with `{ count }` (1..200)
+  - deterministic fictitious user generation in backend
+  - persistence via existing n8n ingest/list path
+  - frontend controls:
+    - quantity input
+    - `Popular <N>` button
+- Added tests for seed flow:
+  - backend use case + routes + Japa
+  - frontend Jest test for quantity payload and table update
+- Synchronized runbook docs with real production troubleshooting:
+  - placeholder URL mistake (`<path-real-ingest>`) documented
+  - direct n8n webhook smoke commands added
+  - backend seed/execute/clear production smoke commands added
 
 ## Validation commands and outputs (2026-02-19)
 
@@ -43,6 +57,14 @@ Observed:
 - `bun run test` -> success for all projects
 - `bun run lint` -> success for all projects
 - `bun run typecheck` -> success for all projects
+
+Additional API validation:
+```bash
+curl -i -X POST http://127.0.0.1:3001/users/seed -H 'content-type: application/json' -d '{"count":20}'
+```
+
+Observed:
+- `200` response with users payload, and frontend table updates without reload.
 
 ## Reliability matrix (issue #60)
 

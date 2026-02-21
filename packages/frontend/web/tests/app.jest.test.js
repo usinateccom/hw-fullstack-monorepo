@@ -67,8 +67,41 @@ describe("App component", () => {
     fireEvent.click(screen.getByRole("button", { name: "Executar" }));
 
     expect(screen.getByRole("button", { name: "Executando..." })).toBeDisabled();
+    const waitingButtons = screen.getAllByRole("button", { name: "Aguarde..." });
+    expect(waitingButtons[0]).toBeDisabled();
+    expect(waitingButtons[1]).toBeDisabled();
 
     resolver({ ok: true, json: async () => ({ users: [] }) });
     await waitFor(() => expect(screen.getByRole("button", { name: "Executar" })).toBeInTheDocument());
+  });
+
+  test("seed populates users with count payload", async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        users: [{ nome: "Seed", email: "seed@example.com", phone: "111" }]
+      })
+    });
+
+    render(React.createElement(App, { apiBaseUrl }));
+
+    fireEvent.change(screen.getByLabelText("Quantidade de registros para popular"), {
+      target: { value: "15" }
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Popular 15" }));
+
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        "http://localhost:3001/users/seed",
+        expect.objectContaining({
+          method: "POST",
+          body: JSON.stringify({ count: 15 })
+        })
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("seed@example.com")).toBeInTheDocument();
+    });
   });
 });

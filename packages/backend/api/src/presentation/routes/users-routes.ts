@@ -9,4 +9,10 @@ export async function registerUsersRoutes(app: FastifyInstance, controller: User
   app.post("/users/clear", async () => {
     return controller.clear();
   });
+
+  app.post("/users/seed", async (request) => {
+    const body = (request.body ?? {}) as { count?: unknown };
+    const count = typeof body.count === "number" ? body.count : Number(body.count ?? 0);
+    return controller.seed(count);
+  });
 }
