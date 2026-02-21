@@ -34,6 +34,31 @@ Important:
 - Jobs are gated by secrets presence; if missing, deploy jobs are skipped.
 - No Vercel credentials are stored in repository files.
 
+## Unified CD (3 deploys in sequence)
+
+Workflow file:
+- `.github/workflows/release-deploy.yml`
+
+Behavior:
+- Trigger: push to `main` and manual dispatch.
+- Stage 1: trigger Railway backend deploy (deploy hook).
+- Stage 2: trigger Railway n8n deploy (deploy hook).
+- Stage 3: wait readiness for backend `/health` and n8n root URL.
+- Stage 4: build and deploy frontend to Vercel production.
+- Stage 5: production smoke (`/health`, frontend root, `/users/execute`, `/users/clear`).
+
+Required GitHub secrets:
+- `RAILWAY_BACKEND_DEPLOY_HOOK_URL`
+- `RAILWAY_N8N_DEPLOY_HOOK_URL`
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+Required GitHub repository variables:
+- `PROD_BACKEND_URL` (example: `https://hw-fullstack-monorepo-production.up.railway.app`)
+- `PROD_N8N_URL` (example: `https://n8ndocker-production-7c03.up.railway.app`)
+- `PROD_FRONTEND_URL` (example: `https://hw-fullstack-monorepo-web.vercel.app`)
+
 ## Backend (Fastify + Bun)
 
 ### Recommended platforms

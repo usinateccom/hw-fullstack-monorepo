@@ -1,0 +1,114 @@
+name: Unified Production Deploy
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy-all:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RAILWAY_BACKEND_DEPLOY_HOOK_URL: ${{ secrets.RAILWAY_BACKEND_DEPLOY_HOOK_URL }}
+      RAILWAY_N8N_DEPLOY_HOOK_URL: ${{ secrets.RAILWAY_N8N_DEPLOY_HOOK_URL }}
+      PROD_BACKEND_URL: ${{ vars.PROD_BACKEND_URL }}
+      PROD_N8N_URL: ${{ vars.PROD_N8N_URL }}
+      PROD_FRONTEND_URL: ${{ vars.PROD_FRONTEND_URL }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Validate required deploy configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          required_envs=(
+            RAILWAY_BACKEND_DEPLOY_HOOK_URL
+            RAILWAY_N8N_DEPLOY_HOOK_URL
+            PROD_BACKEND_URL
+            PROD_N8N_URL
+            PROD_FRONTEND_URL
+            VERCEL_TOKEN
+            VERCEL_ORG_ID
+            VERCEL_PROJECT_ID
+          )
+          for key in "${required_envs[@]}"; do
+            if [[ -z "${!key:-}" ]]; then
+              echo "::error::Missing required secret/variable: ${key}"
+              missing=1
+            fi
+          done
+          if [[ "$missing" -ne 0 ]]; then
+            exit 1
+          fi
+
+      - name: Trigger Railway backend deploy
+        run: curl -fsSL -X POST "$RAILWAY_BACKEND_DEPLOY_HOOK_URL"
+
+      - name: Trigger Railway n8n deploy
+        run: curl -fsSL -X POST "$RAILWAY_N8N_DEPLOY_HOOK_URL"
+
+      - name: Wait backend and n8n readiness
+        shell: bash
+        run: |
+          set -euo pipefail
+          wait_url() {
+            local name="$1"
+            local url="$2"
+            local max_retries=60
+            local sleep_sec=5
+            local attempt=1
+            while (( attempt <= max_retries )); do
+              code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || true)
+              if [[ "$code" =~ ^2|3 ]]; then
+                echo "[ready] ${name}: ${url} (HTTP ${code})"
+                return 0
+              fi
+              echo "[wait] ${name}: ${url} (HTTP ${code:-000}) attempt ${attempt}/${max_retries}"
+              sleep "$sleep_sec"
+              ((attempt++))
+            done
+            echo "::error::Timeout waiting ${name} readiness: ${url}"
+            return 1
+          }
+          wait_url "backend-health" "${PROD_BACKEND_URL}/health"
+          wait_url "n8n-root" "${PROD_N8N_URL}/"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build frontend
+        run: bun run --cwd packages/frontend/web build
+
+      - name: Pull Vercel production config
+        working-directory: packages/frontend/web
+        run: bunx vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+
+      - name: Build Vercel prebuilt artifact
+        working-directory: packages/frontend/web
+        run: bunx vercel build --prod --token="$VERCEL_TOKEN"
+
+      - name: Deploy frontend production
+        working-directory: packages/frontend/web
+        run: bunx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+
+      - name: Production smoke checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fSL "${PROD_BACKEND_URL}/health"
+          curl -fSL "${PROD_FRONTEND_URL}"
+          curl -fSL -X POST "${PROD_BACKEND_URL}/users/execute" -H 'content-type: application/json' -d '{}'
+          curl -fSL -X POST "${PROD_BACKEND_URL}/users/clear" -H 'content-type: application/json' -d '{}'

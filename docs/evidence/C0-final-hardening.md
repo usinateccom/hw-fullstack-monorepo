@@ -44,6 +44,11 @@ Finalize repository hygiene and evaluator-ready docs for local-first delivery.
   - placeholder URL mistake (`<path-real-ingest>`) documented
   - direct n8n webhook smoke commands added
   - backend seed/execute/clear production smoke commands added
+- Added unified CD workflow for production deploy orchestration:
+  - backend deploy hook (Railway)
+  - n8n deploy hook (Railway)
+  - frontend deploy (Vercel)
+  - post-deploy smoke checks in one pipeline
 
 ## Validation commands and outputs (2026-02-19)
 
