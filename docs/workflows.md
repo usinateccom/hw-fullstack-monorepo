@@ -17,7 +17,7 @@ Create one Postgres credential and reuse in all Postgres nodes:
 - Port: `5432`
 - Database: `hw_fullstack_db`
 - User: `postgres`
-- Password: `Tst1320`
+- Password: `<defined .env password>`
 - SSL: `off`
 
 ## Expected webhook paths
@@ -31,6 +31,11 @@ Always copy the full **Production URL** from each Webhook node and map in backen
 - `N8N_WEBHOOK_INGEST_URL=<production-url-of-ingest-users>`
 - `N8N_WEBHOOK_LIST_URL=<production-url-of-list-users>`
 - `N8N_WEBHOOK_CLEAR_URL=<production-url-of-clear-users>`
+
+Common mistake:
+- Running curl with placeholders like `<path-real-ingest>` returns:
+  - `The requested webhook "POST <path-real-ingest>" is not registered`
+- Use the copied URL exactly as shown in node Production URL tab.
 
 If imported via CLI, publish and restart n8n:
 ```bash
@@ -50,3 +55,17 @@ console.log(rows);'
 - `clear-users` runs `TRUNCATE TABLE users RESTART IDENTITY;`.
 - Keep credentials inside n8n; do not commit secrets.
 - `404 The requested webhook ... is not registered` means workflow is not active and/or backend env has wrong webhook URL.
+- `502 Application failed to respond` on n8n URL means runtime/service issue (not webhook path issue).
+
+## End-to-end production smoke commands
+```bash
+# n8n webhooks (direct)
+curl -i -X POST "https://<n8n-domain>/webhook/ingest-users" -H 'content-type: application/json' -d '{}'
+curl -i "https://<n8n-domain>/webhook/list-users"
+curl -i -X POST "https://<n8n-domain>/webhook/clear-users" -H 'content-type: application/json' -d '{}'
+
+# backend pipeline
+curl -i -X POST "https://<backend-domain>/users/execute" -H 'content-type: application/json' -d '{}'
+curl -i -X POST "https://<backend-domain>/users/seed" -H 'content-type: application/json' -d '{"count":50}'
+curl -i -X POST "https://<backend-domain>/users/clear" -H 'content-type: application/json' -d '{}'
+```

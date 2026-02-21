@@ -84,4 +84,24 @@ test.group("API endpoints", () => {
     assert.equal(response.statusCode, 200);
     assert.deepEqual(response.json(), { cleared: true });
   });
+
+  test("POST /users/seed returns seeded users", async ({ assert }) => {
+    const app = createApp(config, {
+      secureEndpointClient: { fetchPayload: async () => ({}) },
+      n8nWebhookClient: {
+        ingestUsers: async (users: unknown[]) => ({ accepted: users.length }),
+        listUsers: async () => ({
+          users: [{ nome: "Seed", email: "seed@example.com", phone: "111" }]
+        }),
+        clearUsers: async () => ({ cleared: true })
+      }
+    });
+
+    const response = await app.inject({ method: "POST", url: "/users/seed", payload: { count: 2 } });
+
+    assert.equal(response.statusCode, 200);
+    assert.deepEqual(response.json(), {
+      users: [{ nome: "Seed", email: "seed@example.com", phone: "111" }]
+    });
+  });
 });

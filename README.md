@@ -58,6 +58,7 @@ curl -i http://127.0.0.1:3001/health
 # pipeline execute/clear through backend
 curl -i -X POST http://127.0.0.1:3001/users/execute -H 'content-type: application/json' -d '{}'
 curl -i -X POST http://127.0.0.1:3001/users/clear -H 'content-type: application/json' -d '{}'
+curl -i -X POST http://127.0.0.1:3001/users/seed -H 'content-type: application/json' -d '{"count":20}'
 
 # db verification
 PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT count(*) FROM users;"
@@ -65,6 +66,7 @@ PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "SELECT
 
 Official acceptance path:
 - Use `POST /users/execute` and `POST /users/clear` to validate backend -> n8n -> postgres pipeline.
+- Optional dataset bootstrap for demos: `POST /users/seed`.
 
 ## Useful commands
 ```bash
@@ -78,6 +80,9 @@ N8N_USER_FOLDER=~/.n8n-test N8N_ENCRYPTION_KEY=<key> bunx n8n publish:workflow -
 
 # clear database
 PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "TRUNCATE TABLE users RESTART IDENTITY;"
+
+# seed dataset through backend -> n8n -> postgres
+curl -i -X POST http://127.0.0.1:3001/users/seed -H 'content-type: application/json' -d '{"count":50}'
 ```
 
 ## Local setup guide
@@ -104,6 +109,7 @@ PGPASSWORD='Tst1320' psql -h localhost -U postgres -d hw_fullstack_db -c "TRUNCA
 3. Workflows used:
    - CI quality gate: `.github/workflows/ci.yml`
    - Vercel preview/prod deploy: `.github/workflows/vercel-deploy.yml`
+   - Unified production CD (backend+n8n+frontend): `.github/workflows/release-deploy.yml`
 
 ## Evidence pack
 - M0: `docs/evidence/M0-setup.md`, `docs/evidence/M0-policy.md`

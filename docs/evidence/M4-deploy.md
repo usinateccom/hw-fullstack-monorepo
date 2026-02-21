@@ -21,6 +21,33 @@
   - `VERCEL_ORG_ID`
   - `VERCEL_PROJECT_ID`
 
+## C0-11 - unified CD for 3 deploys
+
+### Workflow
+- File: `.github/workflows/release-deploy.yml`
+- Trigger:
+  - `push` on `main`
+  - `workflow_dispatch`
+
+### Unified deployment order
+1. Railway backend deploy hook trigger
+2. Railway n8n deploy hook trigger
+3. Readiness wait (`backend /health`, `n8n /`)
+4. Vercel production deploy
+5. Smoke checks (`/health`, frontend root, `/users/execute`, `/users/clear`)
+
+### Required GitHub secrets
+- `RAILWAY_BACKEND_DEPLOY_HOOK_URL`
+- `RAILWAY_N8N_DEPLOY_HOOK_URL`
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+### Required GitHub variables
+- `PROD_BACKEND_URL`
+- `PROD_N8N_URL`
+- `PROD_FRONTEND_URL`
+
 ### CI proof placeholders
 - `[ ] PR checks screenshot/link`
 - `[ ] main branch workflow run screenshot/link`
@@ -35,7 +62,7 @@
 - `PENDING` (Railway/Render/Fly)
 
 ### Backend URL
-- `PENDING`
+- `https://hw-fullstack-monorepo-production.up.railway.app`
 
 ### Env var names configured
 - `API_PORT`
@@ -50,9 +77,10 @@
 
 ### Curl proof placeholders
 ```bash
-curl -i https://<backend-url>/health
-curl -i -X POST https://<backend-url>/users/execute -H 'content-type: application/json' -d '{}'
-curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/json' -d '{}'
+curl -i https://hw-fullstack-monorepo-production.up.railway.app/health
+curl -i -X POST https://hw-fullstack-monorepo-production.up.railway.app/users/execute -H 'content-type: application/json' -d '{}'
+curl -i -X POST https://hw-fullstack-monorepo-production.up.railway.app/users/seed -H 'content-type: application/json' -d '{"count":20}'
+curl -i -X POST https://hw-fullstack-monorepo-production.up.railway.app/users/clear -H 'content-type: application/json' -d '{}'
 ```
 
 ## M4-02 - frontend deployment
@@ -61,7 +89,7 @@ curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/
 - `PENDING` (Vercel/Netlify)
 
 ### Frontend URL
-- `PENDING`
+- `https://hw-fullstack-monorepo-web.vercel.app`
 
 ### Frontend env var
 - `VITE_API_BASE_URL=https://<backend-url>`
@@ -91,10 +119,11 @@ curl -i -X POST https://<backend-url>/users/clear -H 'content-type: application/
 - Deploy evidence is still pending cloud publication and public URLs.
 
 ## Remaining manual cloud actions
-- Deploy backend (Railway/Render/Fly) and record backend URL.
-- Deploy frontend (Vercel) and record frontend URL.
-- Configure cloud env vars and CORS.
-- Attach live curl outputs and UI screenshots.
+- Validate n8n production service is online (`200` on service root).
+- Ensure n8n workflows are `Published` and webhook production URLs copied exactly to backend env.
+- Confirm secure endpoint env uses official source:
+  - `SECURE_ENDPOINT_URL=https://n8n-apps.nlabshealth.com/webhook/data-5dYbrVSlMVJxfmco`
+- Attach final run screenshots after `execute` and `seed`.
 
 ## Production fetch diagnostics checklist
 - `[ ] Vercel env: VITE_API_BASE_URL points to backend public URL (not localhost)`
