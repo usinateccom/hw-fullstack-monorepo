@@ -142,7 +142,6 @@ Smoke command:
 ```bash
 BACKEND_URL="https://<backend-domain>" \
 N8N_BASE_URL="https://<n8n-domain>" \
-SEED_COUNT="20" \
 bun run smoke:prod
 ```
 

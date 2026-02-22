@@ -70,9 +70,6 @@ request() {
   if [[ "$status" == "502" ]] && grep -qi "Application failed to respond" "$body_file"; then
     echo "[$name] DIAG service up at edge but app not responding (startup/runtime failure)."
   fi
-  if grep -q "Route POST:/users/seed not found" "$body_file"; then
-    echo "[$name] DIAG backend deploy outdated (missing /users/seed)."
-  fi
 }
 
 echo "== Production Smoke =="
