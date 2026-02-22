@@ -7,7 +7,7 @@
 bun run rag:index
 bun run rag:search "AES-256-GCM"
 bun run rag:search "TRUNCATE users"
-bun run rag:search "seed users production webhook placeholder"
+bun run rag:search "execute clear production webhook placeholder"
 bun run rag:search "unified cd railway vercel deploy hooks"
 ```
 

@@ -200,7 +200,6 @@ Use this script to validate backend + n8n integration quickly.
 ```bash
 BACKEND_URL="https://<backend-domain>" \
 N8N_BASE_URL="https://<n8n-domain>" \
-SEED_COUNT="20" \
 bun run smoke:prod
 ```
 
@@ -208,7 +207,6 @@ What it checks:
 - `GET /health`
 - `POST /users/execute`
 - `POST /users/clear`
-- `POST /users/seed`
 - n8n direct webhooks:
   - `POST /webhook/ingest-users`
   - `GET /webhook/list-users`
@@ -218,4 +216,3 @@ Built-in diagnostics:
 - DNS failure (`Could not resolve host`)
 - n8n webhook not active/registered (`404 ... webhook ... not registered`)
 - service not responding (`502 Application failed to respond`)
-- outdated backend without seed route (`Route POST:/users/seed not found`)

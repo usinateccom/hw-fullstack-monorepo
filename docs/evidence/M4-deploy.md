@@ -79,7 +79,6 @@
 ```bash
 curl -i https://hw-fullstack-monorepo-production.up.railway.app/health
 curl -i -X POST https://hw-fullstack-monorepo-production.up.railway.app/users/execute -H 'content-type: application/json' -d '{}'
-curl -i -X POST https://hw-fullstack-monorepo-production.up.railway.app/users/seed -H 'content-type: application/json' -d '{"count":20}'
 curl -i -X POST https://hw-fullstack-monorepo-production.up.railway.app/users/clear -H 'content-type: application/json' -d '{}'
 ```
 
@@ -123,20 +122,7 @@ curl -i -X POST https://hw-fullstack-monorepo-production.up.railway.app/users/cl
 - Ensure n8n workflows are `Published` and webhook production URLs copied exactly to backend env.
 - Confirm secure endpoint env uses official source:
   - `SECURE_ENDPOINT_URL=https://n8n-apps.nlabshealth.com/webhook/data-5dYbrVSlMVJxfmco`
-- Attach final run screenshots after `execute` and `seed`.
-
-## C0-12 hotfix note (seed compatibility)
-
-Observed in production before hotfix:
-- frontend showed generic message `Falha de comunicacao com backend` when clicking `Popular <N>`
-- backend returned `404` with payload:
-```json
-{"message":"Route POST:/users/seed not found","error":"Not Found","statusCode":404}
-```
-
-Hotfix applied:
-- frontend now parses top-level `message` on non-2xx responses
-- explicit guidance shown when `/users/seed` route is missing in deployed backend
+- Attach final run screenshots after `execute` and `clear`.
 
 ## Production fetch diagnostics checklist
 - `[ ] Vercel env: VITE_API_BASE_URL points to backend public URL (not localhost)`
@@ -156,10 +142,16 @@ Smoke command:
 ```bash
 BACKEND_URL="https://<backend-domain>" \
 N8N_BASE_URL="https://<n8n-domain>" \
-SEED_COUNT="20" \
 bun run smoke:prod
 ```
 
 Observed from this execution environment (agent sandbox):
 - DNS lookups for target domains failed with `Could not resolve host`
 - Result: external validation must be re-run from operator machine/CI runner with public DNS access
+
+## C0-14 strict scope alignment
+- Removed non-scope seed/populate flow from app and docs.
+- Frontend now exposes only challenge-required actions:
+  - `Executar`
+  - `Limpar`
+- Production smoke and API docs now validate only `/users/execute` and `/users/clear` plus n8n webhooks.
