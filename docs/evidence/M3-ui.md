@@ -5,20 +5,17 @@
 - UI contains:
   - `<table>` with `nome/email/phone`
   - button `Executar`
-  - button `Popular <N>` and quantity input
   - button `Limpar`
 - Dynamic updates happen without page reload.
 
 ## M3-02 - API integration
 - `Executar` calls `POST /users/execute` and updates table state.
-- `Popular <N>` calls `POST /users/seed` and updates table state.
 - `Limpar` calls `POST /users/clear` and clears table state.
 - Loading and error states implemented.
 
 ## M3-03 - Jest component tests
 - Jest + React Testing Library tests cover:
   - execute populates table
-  - seed populates table and sends quantity payload
   - clear empties table
   - loading disables buttons
 
@@ -48,7 +45,6 @@ PATH=$HOME/.nvm/versions/node/v22.12.0/bin:$PATH bun run test:e2e
 ### Frontend test highlights
 - Jest + RTL state transitions:
   - execute populates table
-  - seed populates table and validates request body
   - clear empties table
   - loading disables buttons
 - Playwright E2E (mocked API in browser route interception):
