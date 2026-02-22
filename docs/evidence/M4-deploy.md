@@ -144,3 +144,22 @@ Hotfix applied:
 - `[ ] Curl https://<backend-url>/health returns 200`
 - `[ ] Curl POST /users/execute returns JSON payload`
 - `[ ] Browser Network tab confirms request target matches configured backend URL`
+
+## C0-13 production smoke/runbook hardening
+
+Added:
+- `scripts/prod-smoke.sh` (single entrypoint to test backend + n8n in production)
+- root script alias: `bun run smoke:prod`
+- deploy docs updated with copy/paste smoke command and diagnostics map
+
+Smoke command:
+```bash
+BACKEND_URL="https://<backend-domain>" \
+N8N_BASE_URL="https://<n8n-domain>" \
+SEED_COUNT="20" \
+bun run smoke:prod
+```
+
+Observed from this execution environment (agent sandbox):
+- DNS lookups for target domains failed with `Could not resolve host`
+- Result: external validation must be re-run from operator machine/CI runner with public DNS access
