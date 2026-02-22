@@ -104,4 +104,24 @@ describe("App component", () => {
       expect(screen.getByText("seed@example.com")).toBeInTheDocument();
     });
   });
+
+  test("seed route missing returns explicit deploy guidance", async () => {
+    global.fetch.mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({
+        message: "Route POST:/users/seed not found"
+      })
+    });
+
+    render(React.createElement(App, { apiBaseUrl }));
+    fireEvent.click(screen.getByRole("button", { name: "Popular 20" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Backend publicado sem rota /users/seed. Faça deploy da versao mais recente para habilitar o botao Popular."
+        )
+      ).toBeInTheDocument();
+    });
+  });
 });
