@@ -3,7 +3,6 @@ import {
   applyClearSuccess,
   applyExecuteSuccess,
   applyFailure,
-  applySeedSuccess,
   canClear,
   canExecute,
   initialUiState,
@@ -24,10 +23,6 @@ function toUiError(error) {
 
   if (rawMessage.toLowerCase().includes("failed to fetch")) {
     return "Falha de rede ao chamar backend. Verifique VITE_API_BASE_URL no deploy e CORS_ORIGIN no backend.";
-  }
-
-  if (rawMessage.includes("Route POST:/users/seed not found")) {
-    return "Backend publicado sem rota /users/seed. Faça deploy da versao mais recente para habilitar o botao Popular.";
   }
 
   if (error && typeof error === "object" && "message" in error) {
@@ -57,7 +52,6 @@ async function callApi(apiBaseUrl, path, init) {
 
 export function App({ apiBaseUrl }) {
   const [state, setState] = useState(initialUiState());
-  const [seedCount, setSeedCount] = useState(20);
   const hasUsers = useMemo(() => state.users.length > 0, [state.users.length]);
   const runningOutsideLocalhost =
     typeof window !== "undefined" && !["localhost", "127.0.0.1"].includes(window.location.hostname);
@@ -96,24 +90,6 @@ export function App({ apiBaseUrl }) {
     }
   }
 
-  async function handleSeed() {
-    if (!canExecute(state)) return;
-    const normalizedCount = Number(seedCount);
-
-    setState((prev) => startLoading(prev));
-
-    try {
-      const payload = await callApi(apiBaseUrl, "/users/seed", {
-        method: "POST",
-        body: JSON.stringify({ count: normalizedCount })
-      });
-      const users = parseUsers(payload);
-      setState((prev) => applySeedSuccess(prev, users, normalizedCount));
-    } catch (error) {
-      setState((prev) => applyFailure(prev, toUiError(error)));
-    }
-  }
-
   return React.createElement(
     "main",
     { className: "page" },
@@ -146,25 +122,6 @@ export function App({ apiBaseUrl }) {
           },
           state.loading ? "Executando..." : "Executar"
         ),
-        React.createElement(
-          "button",
-          {
-            type: "button",
-            className: "secondary",
-            disabled: state.loading,
-            onClick: handleSeed
-          },
-          state.loading ? "Aguarde..." : `Popular ${seedCount}`
-        ),
-        React.createElement("input", {
-          type: "number",
-          min: 1,
-          max: 200,
-          step: 1,
-          value: seedCount,
-          onChange: (event) => setSeedCount(Number(event.target.value || 0)),
-          "aria-label": "Quantidade de registros para popular"
-        }),
         React.createElement(
           "button",
           {

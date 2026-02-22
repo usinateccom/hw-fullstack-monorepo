@@ -8,7 +8,6 @@ set -euo pipefail
 
 BACKEND_URL="${BACKEND_URL:-}"
 N8N_BASE_URL="${N8N_BASE_URL:-}"
-SEED_COUNT="${SEED_COUNT:-20}"
 
 if [[ -z "$BACKEND_URL" || -z "$N8N_BASE_URL" ]]; then
   echo "ERROR: BACKEND_URL and N8N_BASE_URL are required."
@@ -84,7 +83,6 @@ echo
 request "backend-health" "GET" "$BACKEND_URL/health"
 request "backend-execute" "POST" "$BACKEND_URL/users/execute" '{}'
 request "backend-clear" "POST" "$BACKEND_URL/users/clear" '{}'
-request "backend-seed" "POST" "$BACKEND_URL/users/seed" "{\"count\":$SEED_COUNT}"
 
 request "n8n-ingest" "POST" "$N8N_BASE_URL/webhook/ingest-users" '{"users":[{"nome":"Smoke User","email":"smoke.user@example.com","phone":"+55 11 90000-0001"}]}'
 request "n8n-list" "GET" "$N8N_BASE_URL/webhook/list-users"

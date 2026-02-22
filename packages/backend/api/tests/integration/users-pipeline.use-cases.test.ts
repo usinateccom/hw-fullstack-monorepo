@@ -2,7 +2,6 @@ import { describe, expect, it } from "bun:test";
 import { AppError } from "../../src/domain/errors/app-error";
 import { ClearUsersUseCase } from "../../src/application/use-cases/clear-users";
 import { ExecuteUsersPipelineUseCase } from "../../src/application/use-cases/execute-users-pipeline";
-import { SeedUsersUseCase } from "../../src/application/use-cases/seed-users";
 
 describe("users pipeline use cases", () => {
   it("execute forwards decrypted users to n8n and returns persisted payload", async () => {
@@ -76,38 +75,4 @@ describe("users pipeline use cases", () => {
     }
   });
 
-  it("seed generates users and returns persisted users", async () => {
-    const n8nWebhookClient = {
-      ingestUsers: async (users: any[]) => ({ accepted: users.length }),
-      listUsers: async () => ({
-        users: [{ nome: "Seed", email: "seed@example.com", phone: "111" }]
-      }),
-      clearUsers: async () => ({ cleared: true })
-    };
-
-    const useCase = new SeedUsersUseCase(n8nWebhookClient as any);
-    const output = await useCase.execute(5);
-
-    expect(output).toEqual({
-      users: [{ nome: "Seed", email: "seed@example.com", phone: "111" }]
-    });
-  });
-
-  it("seed rejects invalid count", async () => {
-    const n8nWebhookClient = {
-      ingestUsers: async () => ({}),
-      listUsers: async () => ({ users: [] }),
-      clearUsers: async () => ({ cleared: true })
-    };
-
-    const useCase = new SeedUsersUseCase(n8nWebhookClient as any);
-
-    try {
-      await useCase.execute(0);
-      throw new Error("Should fail");
-    } catch (error) {
-      expect(error).toBeInstanceOf(AppError);
-      expect((error as AppError).code).toBe("INVALID_SEED_COUNT");
-    }
-  });
 });

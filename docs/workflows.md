@@ -66,6 +66,5 @@ curl -i -X POST "https://<n8n-domain>/webhook/clear-users" -H 'content-type: app
 
 # backend pipeline
 curl -i -X POST "https://<backend-domain>/users/execute" -H 'content-type: application/json' -d '{}'
-curl -i -X POST "https://<backend-domain>/users/seed" -H 'content-type: application/json' -d '{"count":50}'
 curl -i -X POST "https://<backend-domain>/users/clear" -H 'content-type: application/json' -d '{}'
 ```

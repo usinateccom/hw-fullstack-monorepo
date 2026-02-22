@@ -25,16 +25,6 @@ export function applyExecuteSuccess(state, users) {
   };
 }
 
-export function applySeedSuccess(state, users, count) {
-  return {
-    ...state,
-    users,
-    loading: false,
-    error: "",
-    message: `Popular ${count} registro(s): tabela retornou ${users.length} registro(s).`
-  };
-}
-
 export function applyClearSuccess(state) {
   return {
     ...state,
