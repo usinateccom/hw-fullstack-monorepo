@@ -26,6 +26,10 @@ function toUiError(error) {
     return "Falha de rede ao chamar backend. Verifique VITE_API_BASE_URL no deploy e CORS_ORIGIN no backend.";
   }
 
+  if (rawMessage.includes("Route POST:/users/seed not found")) {
+    return "Backend publicado sem rota /users/seed. Faça deploy da versao mais recente para habilitar o botao Popular.";
+  }
+
   if (error && typeof error === "object" && "message" in error) {
     return String(error.message);
   }
@@ -44,7 +48,7 @@ async function callApi(apiBaseUrl, path, init) {
 
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const message = body?.error?.message ?? "Falha de comunicacao com backend";
+    const message = body?.error?.message ?? body?.message ?? "Falha de comunicacao com backend";
     throw new Error(message);
   }
 

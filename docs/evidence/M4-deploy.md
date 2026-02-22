@@ -125,6 +125,19 @@ curl -i -X POST https://hw-fullstack-monorepo-production.up.railway.app/users/cl
   - `SECURE_ENDPOINT_URL=https://n8n-apps.nlabshealth.com/webhook/data-5dYbrVSlMVJxfmco`
 - Attach final run screenshots after `execute` and `seed`.
 
+## C0-12 hotfix note (seed compatibility)
+
+Observed in production before hotfix:
+- frontend showed generic message `Falha de comunicacao com backend` when clicking `Popular <N>`
+- backend returned `404` with payload:
+```json
+{"message":"Route POST:/users/seed not found","error":"Not Found","statusCode":404}
+```
+
+Hotfix applied:
+- frontend now parses top-level `message` on non-2xx responses
+- explicit guidance shown when `/users/seed` route is missing in deployed backend
+
 ## Production fetch diagnostics checklist
 - `[ ] Vercel env: VITE_API_BASE_URL points to backend public URL (not localhost)`
 - `[ ] Backend env: CORS_ORIGIN includes frontend Vercel domain(s)`
